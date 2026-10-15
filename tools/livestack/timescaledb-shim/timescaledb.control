@@ -1,0 +1,7 @@
+# go-tangra livestack shim: NOT TimescaleDB. The platform migrations call
+# create_hypertable and add_retention_policy; with this extension they keep
+# plain PostgreSQL tables (no chunking, no retention). Local testing only.
+comment = 'timescaledb stand-in (no-op hypertables) for local testing'
+default_version = '0.0.1'
+relocatable = false
+schema = public
