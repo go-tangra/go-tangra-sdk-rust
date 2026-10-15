@@ -1,0 +1,36 @@
+# How warden describes itself to the gateway's module catalogue (spec 035).
+# Each v* release publishes catalogue-entry.json and bundle.zip built from
+# this file and deploy/bundle/ (see .github/workflows/ci.yaml, job catalogue).
+schema: 1
+module: warden
+display_name: Warden
+category: 12.5
+summary: Team password vault - secrets in HashiCorp Vault, folders, per-secret grants, external shares, Bitwarden import and export.
+image: ghcr.io/go-tangra/go-tangra-warden
+routes:
+  prefixes: [/api/warden, /m/warden, /warden/share]
+  names: [warden]
+min_core: { gateway: 4.9.0, auth: 4.10.0 }
+bundle:
+  dir: deploy/bundle
+  templates: [config.yaml, policy.yaml]
+  tls_hosts: [warden-db, warden-valkey]
+host_inputs:
+  - key: MODULE_ADVERTISE_HOST
+    label: Host name the core uses to reach this module
+    pattern: '^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$'
+  - key: MODULE_BIND_IP
+    label: IP address the module's mesh ports listen on (reachable from the core)
+    pattern: '^((25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])$'
+  - key: VAULT_ADDR
+    label: HashiCorp Vault address (https), reachable from this host
+    pattern: '^https://[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*(:[0-9]{1,5})?$'
+  - key: VAULT_MOUNT
+    label: Vault KV v2 mount warden stores the secret material in
+    pattern: '^[a-z0-9][a-z0-9_-]{0,62}$'
+    default: 0x1f
+    optional: yes
+  - key: NOTIFICATION_GRPC
+    label: Notification module gRPC address (host:port) that mails share links
+    pattern: '^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*:[0-9]{1,5}$'
+docs: https://github.com/go-tangra/go-tangra-warden#readme

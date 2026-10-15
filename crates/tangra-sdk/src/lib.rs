@@ -11,6 +11,7 @@
 pub mod admin;
 pub mod app;
 pub mod audit;
+pub mod catalogue;
 pub mod config;
 pub mod correlation;
 pub mod error;

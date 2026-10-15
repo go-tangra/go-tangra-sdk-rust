@@ -161,7 +161,6 @@ pub(crate) fn ext(p: &str) -> &str {
 
 /// Go `io/fs.ValidPath`: unrooted, slash-separated, no empty, `.` or `..`
 /// elements (the root itself is `.`).
-#[cfg_attr(not(feature = "ui"), allow(dead_code))]
 pub(crate) fn valid_path(p: &str) -> bool {
     if p == "." {
         return true;

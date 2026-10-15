@@ -1,0 +1,10 @@
+error: catalogue: invalid: tangra-module.yaml: yaml: unmarshal errors:
+  line 4: cannot unmarshal !!seq into int
+  line 5: field foo not found in type catalogue.Descriptor
+  line 13: cannot unmarshal !!seq into string
+  line 14: field other not found in type catalogue.Routes
+  line 15: cannot unmarshal !!seq into string
+  line 19: cannot unmarshal !!str `warden-db` into []string
+  line 33: cannot unmarshal !!map into string
+  line 34: cannot unmarshal !!str `maybe` into bool
+  line 35: field extra not found in type catalogue.HostInput

@@ -1,7 +1,8 @@
-//! The slice of `gopkg.in/yaml.v3` the help-docs front-matter needs: a node
-//! tree with 1-based lines (`yaml.Node`), and decoding into `string`, `int`
-//! and `[]string` with yaml.v3's resolution rules (`resolve.go`,
-//! `decode.go` `scalar`/`sequence`/`null`).
+//! The slice of `gopkg.in/yaml.v3` the help-docs front-matter and the
+//! catalogue descriptor need: a node tree with 1-based lines (`yaml.Node`),
+//! and decoding into `string`, `int`, `bool` and `[]string` with yaml.v3's
+//! resolution rules (`resolve.go`, `decode.go` `scalar`/`sequence`/`null`)
+//! and its type-error wording (`terror`).
 //!
 //! Parsing uses `yaml-rust2` (a YAML 1.2 parser ported from libyaml, like
 //! yaml.v3's). Only the first document is read, as `yaml.Unmarshal` does.
@@ -436,6 +437,76 @@ pub(crate) fn decode_strings(n: &Node, out: &mut Vec<String>) -> Result<(), ()> 
             *out = good;
             if failed { Err(()) } else { Ok(()) }
         }
+    }
+}
+
+/// yaml.v3 `Node.Tag` (explicit, else resolved: `!!str`, `!!int`, ...).
+pub(crate) fn node_tag(n: &Node) -> String {
+    match &n.kind {
+        Kind::Seq(_) => "!!seq".to_owned(),
+        Kind::Map(_) => "!!map".to_owned(),
+        Kind::Scalar { tag, .. } if !tag.is_empty() => tag.clone(),
+        Kind::Scalar { plain: false, .. } => "!!str".to_owned(),
+        Kind::Scalar { value, .. } => resolve_plain("", value).0.to_owned(),
+    }
+}
+
+/// yaml.v3 `terror`: `line N: cannot unmarshal <tag> `<value>` into <type>`.
+pub(crate) fn terror(n: &Node, into: &str) -> String {
+    let tag = node_tag(n);
+    let value = match &n.kind {
+        Kind::Scalar { value, .. } if tag != "!!seq" && tag != "!!map" => {
+            if value.len() > 10 {
+                let cut = (0..=7).rev().find(|i| value.is_char_boundary(*i)).unwrap_or(0);
+                format!(" `{}...`", &value[..cut])
+            } else {
+                format!(" `{value}`")
+            }
+        }
+        _ => String::new(),
+    };
+    format!("line {}: cannot unmarshal {tag}{value} into {into}", n.line)
+}
+
+/// Whether the node decodes as null (unchanged target).
+pub(crate) fn is_null(n: &Node) -> bool {
+    match &n.kind {
+        Kind::Scalar { value, plain, tag } => {
+            !indicated_string(*plain, tag) && resolve(tag, value) == Ok(Resolved::Null)
+        }
+        _ => false,
+    }
+}
+
+/// `Node.Decode(&bool)`, including yaml.v3's YAML 1.1 words when the scalar
+/// resolved to a string.
+pub(crate) fn decode_bool(n: &Node, out: &mut bool) -> Result<(), ()> {
+    let Kind::Scalar { value, plain, tag } = &n.kind else {
+        return Err(());
+    };
+    let resolved = if indicated_string(*plain, tag) {
+        Resolved::Str
+    } else {
+        resolve(tag, value)?
+    };
+    match resolved {
+        Resolved::Null => Ok(()),
+        Resolved::Bool => {
+            *out = matches!(value.as_str(), "true" | "True" | "TRUE");
+            Ok(())
+        }
+        Resolved::Str | Resolved::Other => match value.as_str() {
+            "y" | "Y" | "yes" | "Yes" | "YES" | "on" | "On" | "ON" => {
+                *out = true;
+                Ok(())
+            }
+            "n" | "N" | "no" | "No" | "NO" | "off" | "Off" | "OFF" => {
+                *out = false;
+                Ok(())
+            }
+            _ => Err(()),
+        },
+        _ => Err(()),
     }
 }
 

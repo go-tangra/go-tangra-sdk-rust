@@ -1,0 +1,39 @@
+# How deployer describes itself to the gateway's module catalogue (spec 035).
+# Each v* release publishes catalogue-entry.json and bundle.zip built from
+# this file and deploy/bundle/ (see .github/workflows/ci.yaml, job catalogue).
+schema: 1
+module: deployer
+display_name: Deployer
+category: Certificates
+summary: Deploys lcm-issued certificates to cloud services, load balancers, firewalls and webhooks, on demand or on renewal.
+image: ghcr.io/go-tangra/go-tangra-deployer
+routes:
+  prefixes: [/api/deployer, /m/deployer, /deployer]
+  names: [deployer]
+min_core: { gateway: 4.9.0, auth: 4.10.0 }
+bundle:
+  dir: deploy/bundle
+  templates: [config.yaml, policy.yaml]
+  tls_hosts: [deployer-db]
+host_inputs:
+  - {key: K00X, label: L, pattern: '^a$'}
+  - {key: K01X, label: L, pattern: '^a$'}
+  - {key: K02X, label: L, pattern: '^a$'}
+  - {key: K03X, label: L, pattern: '^a$'}
+  - {key: K04X, label: L, pattern: '^a$'}
+  - {key: K05X, label: L, pattern: '^a$'}
+  - {key: K06X, label: L, pattern: '^a$'}
+  - {key: K07X, label: L, pattern: '^a$'}
+  - {key: K08X, label: L, pattern: '^a$'}
+  - {key: K09X, label: L, pattern: '^a$'}
+  - {key: K10X, label: L, pattern: '^a$'}
+  - {key: K11X, label: L, pattern: '^a$'}
+  - {key: K12X, label: L, pattern: '^a$'}
+  - {key: K13X, label: L, pattern: '^a$'}
+  - {key: K14X, label: L, pattern: '^a$'}
+  - {key: K15X, label: L, pattern: '^a$'}
+  - {key: K16X, label: L, pattern: '^a$'}
+  - {key: K17X, label: L, pattern: '^a$'}
+  - {key: K18X, label: L, pattern: '^a$'}
+  - {key: K19X, label: L, pattern: '^a$'}
+  - {key: K20X, label: L, pattern: '^a$'}

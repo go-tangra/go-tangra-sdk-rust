@@ -1,0 +1,67 @@
+# How ticket describes itself to the gateway's module catalogue (spec 035).
+# Each v* release publishes catalogue-entry.json and bundle.zip built from
+# this file and deploy/bundle/ (see .github/workflows/ci.yaml, job catalogue).
+schema: 1
+module: ticket
+display_name: Tickets
+category: Collaboration
+summary: Email helpdesk - tickets, conversations, inbound mail intake, auto-acknowledgements and CEL triage rules.
+image: ghcr.io/go-tangra/go-tangra-ticket
+routes:
+  prefixes: [/api/ticket, /m/ticket, /ticket]
+  names: [ticket]
+# gateway 4.12.0: optional host inputs (framework 4.9.0).
+min_core: { gateway: 4.12.0, auth: 4.10.0 }
+bundle:
+  dir: deploy/bundle
+  templates: [config.yaml, policy.yaml]
+  tls_hosts: [ticket-db, ticket-rustfs]
+host_inputs:
+  - key: MODULE_ADVERTISE_HOST
+    label: Host name the core uses to reach this module
+    pattern: '^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$'
+  - key: MODULE_BIND_IP
+    label: IP address the module's mesh ports listen on (reachable from the core)
+    pattern: '^((25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])$'
+  - key: VALKEY_ADDRESS
+    label: Core event bus (Valkey, TLS) as host:port, reachable from this host
+    pattern: '^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*:[1-9][0-9]{0,4}$'
+  - key: VALKEY_PASSWORD
+    label: Password of the core event bus user "ticket"
+    pattern: '^[A-Za-z0-9._~+/=-]{16,128}$'
+  - key: VALKEY_CA_FILE
+    label: Host file of the CA certificate (PEM) of the core event bus (mounted read-only)
+    pattern: '^/[A-Za-z0-9._/-]{0,254}$'
+  - key: TICKET_INBOUND_LISTEN
+    label: Host address and port of the inbound mail edge (only your MTA needs it)
+    pattern: '^((25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9]):[1-9][0-9]{0,4}$'
+    default: 0.0.0.0:9957
+  - key: TICKET_INBOUND_TLS_DIR
+    label: Host directory with the inbound edge certificate your MTA trusts (tls.crt, tls.key)
+    pattern: '^/[A-Za-z0-9._/-]{0,254}$'
+  - key: TICKET_MAIL_DOMAIN
+    label: Mail domain of the support mailboxes (Message-ID fallback)
+    pattern: '^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$'
+  # Outbound mail (public replies, acknowledgements). Left empty, replies are
+  # refused and acknowledgements skipped.
+  - key: TICKET_SMTP_HOST
+    label: 'Outbound SMTP relay host (empty: no outbound mail)'
+    pattern: '^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*$'
+    optional: true
+  - key: TICKET_SMTP_PORT
+    label: SMTP relay port (587 STARTTLS, 465 implicit TLS)
+    pattern: '^[1-9][0-9]{0,4}$'
+    default: "587"
+  - key: TICKET_SMTP_TLS
+    label: SMTP relay TLS mode (starttls or implicit)
+    pattern: '^(starttls|implicit)$'
+    default: starttls
+  - key: TICKET_SMTP_USERNAME
+    label: 'SMTP relay user (empty: no authentication)'
+    pattern: '^[^\s''"$`\\]{1,128}$'
+    optional: true
+  - key: TICKET_SMTP_PASSWORD
+    label: SMTP relay password
+    pattern: '^[^\s''"$`\\]{1,128}$'
+    optional: true
+docs: https://github.com/go-tangra/go-tangra-ticket#readme
