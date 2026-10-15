@@ -14,7 +14,10 @@ pub mod error;
 pub mod identity;
 pub mod listquery;
 pub mod log;
+pub mod testutil;
+pub mod tls;
 
 mod gofmt;
+mod net;
 
 pub use gofmt::GoDuration;

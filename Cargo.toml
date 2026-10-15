@@ -58,3 +58,6 @@ thiserror = "2"
 if-addrs = "0.15"
 async-trait = "0.1"
 tempfile = "3"
+time = "0.3"
+pem = "3"
+spiffe = { version = "0.18", default-features = false, features = ["workload-api-x509"] }

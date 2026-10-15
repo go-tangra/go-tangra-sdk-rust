@@ -10,8 +10,8 @@ publish.workspace = true
 
 [features]
 default = []
-# SPIFFE Workload API identity provider (not implemented yet; see identity::spiffe).
-spiffe = []
+# SPIFFE Workload API identity provider (identity::spiffe, rust-spiffe crate).
+spiffe = ["dep:spiffe"]
 
 [dependencies]
 tangra-proto.workspace = true
@@ -50,6 +50,9 @@ rand.workspace = true
 thiserror.workspace = true
 if-addrs.workspace = true
 async-trait.workspace = true
+time.workspace = true
+pem.workspace = true
+spiffe = { workspace = true, optional = true }
 
 [dev-dependencies]
 tempfile.workspace = true
