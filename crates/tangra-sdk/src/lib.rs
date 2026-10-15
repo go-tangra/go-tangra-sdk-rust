@@ -15,6 +15,8 @@ pub mod catalogue;
 pub mod config;
 pub mod correlation;
 pub mod error;
+#[cfg(feature = "events")]
+pub mod events;
 pub mod fstree;
 pub mod helpdocs;
 pub mod identity;
