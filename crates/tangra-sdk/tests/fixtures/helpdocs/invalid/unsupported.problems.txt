@@ -1,0 +1,8 @@
+load:
+.hidden: unsupported file type ".hidden" (pages are .md; images png, jpg, webp or gif)
+README.MD: unsupported file type ".md" (pages are .md; images png, jpg, webp or gif)
+notes.txt: unsupported file type ".txt" (pages are .md; images png, jpg, webp or gif)
+lint:
+.hidden: unsupported file type ".hidden" (pages are .md; images png, jpg, webp or gif)
+README.MD: unsupported file type ".md" (pages are .md; images png, jpg, webp or gif)
+notes.txt: unsupported file type ".txt" (pages are .md; images png, jpg, webp or gif)

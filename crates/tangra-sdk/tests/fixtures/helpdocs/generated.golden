@@ -1,0 +1,17 @@
+== empty
+digest "" pages 0 assets 0 json {"schema":1,"module":"fixture","digest":"","pages":[],"assets":[]}
+== nil
+digest "" pages 0 assets 0 json {"schema":1,"module":"fixture","digest":"","pages":[],"assets":[]}
+== missing-root
+digest "" pages 0 assets 0 json {"schema":1,"module":"fixture","digest":"","pages":[],"assets":[]}
+== pages-501
+501 pages exceed the limit of 500
+== page-too-big
+big.md: 262180 bytes exceed the per-file limit of 262144
+== asset-too-big
+big.png: 524289 bytes exceed the per-file limit of 524288
+other.svg: 524289 bytes exceed the per-file limit of 524288
+== total-too-big
+4608037 bytes of pages and images exceed the limit of 4194304
+== symlink
+link.md: not a regular file (symlinks are not allowed)

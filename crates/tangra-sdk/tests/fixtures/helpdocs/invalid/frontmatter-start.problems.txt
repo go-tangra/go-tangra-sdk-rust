@@ -1,0 +1,4 @@
+load:
+index.md:1: a page must start with YAML front-matter (a line "---")
+lint:
+index.md:1: a page must start with YAML front-matter (a line "---")

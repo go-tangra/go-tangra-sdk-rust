@@ -1,0 +1,34 @@
+# How asset describes itself to the gateway's module catalogue (spec 035).
+# Each v* release publishes catalogue-entry.json and bundle.zip built from
+# this file and deploy/bundle/ (see .github/workflows/ci.yaml, job catalogue).
+schema: 1
+module: asset
+display_name: Assets
+category: IT Management
+summary: IT asset management - assets and assignments, categories, locations, suppliers, consumables, licenses, insurance and depreciation.
+image: ghcr.io/go-tangra/go-tangra-asset
+routes:
+  prefixes: [/api/asset, /m/asset, /asset]
+  names: [asset]
+min_core: { gateway: 4.9.0, auth: 4.10.0 }
+bundle:
+  dir: deploy/bundle
+  templates: [config.yaml, policy.yaml]
+  tls_hosts: [asset-db, asset-s3]
+host_inputs:
+  - key: MODULE_ADVERTISE_HOST
+    label: Host name the core uses to reach this module
+    pattern: '^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)+$'
+  - key: MODULE_BIND_IP
+    label: IP address the module's mesh ports listen on (reachable from the core)
+    pattern: '^((25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1?[0-9]?[0-9])$'
+  - key: VALKEY_ADDRESS
+    label: Core event bus (Valkey, TLS) as host:port, reachable from this host
+    pattern: '^[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*:[1-9][0-9]{0,4}$'
+  - key: VALKEY_PASSWORD
+    label: Password of the core event bus user "asset"
+    pattern: '^[A-Za-z0-9._~+/=-]{16,128}$'
+  - key: VALKEY_CA_FILE
+    label: Host file of the CA certificate (PEM) of the core event bus (mounted read-only)
+    pattern: '^/[A-Za-z0-9._/-]{0,254}$'
+docs: https://github.com/go-tangra/go-tangra-asset#readme

@@ -1,0 +1,8 @@
+load:
+index.md:4: at most 20 tags
+index.md:4: tag "Bad_Tag" must be lowercase [a-z0-9-], at most 32 characters
+index.md:4: duplicate tag "t1"
+lint:
+index.md:4: at most 20 tags
+index.md:4: tag "Bad_Tag" must be lowercase [a-z0-9-], at most 32 characters
+index.md:4: duplicate tag "t1"

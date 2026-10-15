@@ -12,10 +12,15 @@ pub mod admin;
 pub mod app;
 pub mod audit;
 pub mod auth;
+pub mod catalogue;
 pub mod config;
 pub mod correlation;
 pub mod error;
+#[cfg(feature = "events")]
+pub mod events;
+pub mod fstree;
 pub mod gateway;
+pub mod helpdocs;
 pub mod identity;
 pub mod listquery;
 pub mod log;
@@ -23,8 +28,14 @@ pub mod manifest;
 pub mod policy;
 pub mod testutil;
 pub mod tls;
+#[cfg(feature = "ui")]
+pub mod ui;
 
+mod gocompat;
 mod gofmt;
+mod goyaml;
 mod net;
 
 pub use gofmt::GoDuration;
+/// The `include_dir` crate the SDK's embedded trees ([`fstree::FileTree::from_embedded`]) accept.
+pub use include_dir;

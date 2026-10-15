@@ -1,0 +1,6 @@
+load:
+index.md:4: unknown front-matter field "author" (title, summary, kind, order, tags, requires, audience, lang)
+index.md:5: unknown front-matter field "weight" (title, summary, kind, order, tags, requires, audience, lang)
+lint:
+index.md:4: unknown front-matter field "author" (title, summary, kind, order, tags, requires, audience, lang)
+index.md:5: unknown front-matter field "weight" (title, summary, kind, order, tags, requires, audience, lang)

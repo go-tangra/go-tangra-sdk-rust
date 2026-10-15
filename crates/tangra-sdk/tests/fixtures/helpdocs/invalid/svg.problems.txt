@@ -1,0 +1,6 @@
+load:
+img/x.svg: SVG images are not allowed (they can carry script); use png, jpg, webp or gif
+img/y.SVGZ: SVG images are not allowed (they can carry script); use png, jpg, webp or gif
+lint:
+img/x.svg: SVG images are not allowed (they can carry script); use png, jpg, webp or gif
+img/y.SVGZ: SVG images are not allowed (they can carry script); use png, jpg, webp or gif

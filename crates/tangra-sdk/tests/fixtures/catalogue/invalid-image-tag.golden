@@ -1,0 +1,1 @@
+error: catalogue: invalid: image "ghcr.io/go-tangra/go-tangra-deployer:1.0" must be a repository without tag or digest

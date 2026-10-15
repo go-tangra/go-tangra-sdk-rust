@@ -64,3 +64,8 @@ base64 = "0.22"
 regex = "1"
 ring = "0.17"
 spiffe = { version = "0.18", default-features = false, features = ["workload-api-x509"] }
+include_dir = "0.7"
+yaml-rust2 = { version = "0.10", default-features = false }
+sha2 = "0.10"
+hex = "0.4"
+redis = { version = "1", default-features = false, features = ["tokio-comp", "streams"] }

@@ -1,0 +1,2 @@
+error: catalogue: invalid: tangra-module.yaml: yaml: unmarshal errors:
+  line 6: mapping key "schema" already defined at line 4

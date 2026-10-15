@@ -1,0 +1,1 @@
+error: catalogue: invalid: host_inputs: key "valkey_ca" must match ^[A-Z][A-Z0-9_]{1,63}$

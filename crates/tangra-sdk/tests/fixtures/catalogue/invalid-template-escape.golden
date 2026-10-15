@@ -1,0 +1,1 @@
+error: catalogue: invalid: bundle.templates: "../x" must be a relative path inside the bundle

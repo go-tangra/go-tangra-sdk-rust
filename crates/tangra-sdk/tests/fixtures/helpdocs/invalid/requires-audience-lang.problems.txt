@@ -1,0 +1,8 @@
+load:
+index.md:4: requires "Orders" is not a resource:action permission
+index.md:5: audience "admin" is not one of user, operator
+index.md:6: lang "fr" is not supported (only en)
+lint:
+index.md:4: requires "Orders" is not a resource:action permission
+index.md:5: audience "admin" is not one of user, operator
+index.md:6: lang "fr" is not supported (only en)

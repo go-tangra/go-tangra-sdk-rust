@@ -1,0 +1,6 @@
+load:
+index.md:1: title is required
+index.md:1: kind is required (guide, example, reference, faq)
+lint:
+index.md:1: title is required
+index.md:1: kind is required (guide, example, reference, faq)

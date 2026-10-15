@@ -1,0 +1,16 @@
+load:
+index.md:2: front-matter: title has the wrong type
+index.md:2: title is required
+index.md:3: front-matter: kind has the wrong type
+index.md:3: kind is required (guide, example, reference, faq)
+index.md:4: front-matter: order has the wrong type
+index.md:5: front-matter: tags has the wrong type
+index.md:6: front-matter: summary has the wrong type
+lint:
+index.md:2: front-matter: title has the wrong type
+index.md:2: title is required
+index.md:3: front-matter: kind has the wrong type
+index.md:3: kind is required (guide, example, reference, faq)
+index.md:4: front-matter: order has the wrong type
+index.md:5: front-matter: tags has the wrong type
+index.md:6: front-matter: summary has the wrong type

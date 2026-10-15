@@ -1,0 +1,4 @@
+load:
+index.md:2: front-matter: line 1: did not find expected ',' or ']'
+lint:
+index.md:2: front-matter: line 1: did not find expected ',' or ']'

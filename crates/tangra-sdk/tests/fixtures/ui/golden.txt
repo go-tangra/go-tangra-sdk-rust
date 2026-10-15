@@ -1,0 +1,402 @@
+== GET /ui/remoteEntry.js
+status 200
+accept-ranges: bytes
+cache-control: no-cache
+content-length: 19
+content-type: text/javascript; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "export const x = 1;"
+== HEAD /ui/remoteEntry.js
+status 200
+accept-ranges: bytes
+cache-control: no-cache
+content-length: 19
+content-type: text/javascript; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body ""
+== GET /ui/mf-manifest.json
+status 200
+accept-ranges: bytes
+cache-control: no-cache
+content-length: 17
+content-type: application/json
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "{\"name\":\"orders\"}"
+== GET /ui/assets/app-1a2b.js
+status 200
+accept-ranges: bytes
+cache-control: public, max-age=31536000, immutable
+content-length: 14
+content-type: text/javascript; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "console.log(1)"
+== GET /ui/assets/style.css
+status 200
+accept-ranges: bytes
+cache-control: public, max-age=31536000, immutable
+content-length: 6
+content-type: text/css; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "body{}"
+== GET /ui/assets/font.woff2
+status 200
+accept-ranges: bytes
+cache-control: public, max-age=31536000, immutable
+content-length: 6
+content-type: font/woff2
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "wOF2\x00\x01"
+== GET /ui/assets/data.map
+status 200
+accept-ranges: bytes
+cache-control: public, max-age=31536000, immutable
+content-length: 13
+content-type: text/plain; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "{\"version\":3}"
+== GET /ui/assets/blob
+status 200
+accept-ranges: bytes
+cache-control: public, max-age=31536000, immutable
+content-length: 4
+content-type: application/octet-stream
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "\x00\x01\x02\x03"
+== GET /ui/assets/icon.svg
+status 200
+accept-ranges: bytes
+cache-control: public, max-age=31536000, immutable
+content-length: 6
+content-type: image/svg+xml
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "<svg/>"
+== GET /ui/assets/logo.png
+status 200
+accept-ranges: bytes
+cache-control: public, max-age=31536000, immutable
+content-length: 12
+content-type: image/png
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "\x89PNG\r\n\x1a\nxxxx"
+== GET /ui/digits.txt
+status 200
+accept-ranges: bytes
+cache-control: no-cache
+content-length: 10
+content-type: text/plain; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "0123456789"
+== POST /ui/remoteEntry.js
+status 404
+cache-control: no-store
+content-type: application/json
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "{\"reason\":\"not_found\"}\n"
+== PUT /ui/
+status 404
+cache-control: no-store
+content-type: application/json
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "{\"reason\":\"not_found\"}\n"
+== DELETE /ui/assets/blob
+status 404
+cache-control: no-store
+content-type: application/json
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "{\"reason\":\"not_found\"}\n"
+== GET /ui/
+status 404
+cache-control: no-store
+content-type: application/json
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "{\"reason\":\"not_found\"}\n"
+== GET /ui/nope.js
+status 404
+cache-control: no-store
+content-type: application/json
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "{\"reason\":\"not_found\"}\n"
+== GET /ui/assets/
+status 404
+cache-control: no-store
+content-type: application/json
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "{\"reason\":\"not_found\"}\n"
+== GET /ui/sub/
+status 404
+cache-control: no-store
+content-type: application/json
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "{\"reason\":\"not_found\"}\n"
+== GET /ui/assets
+status 301
+cache-control: no-cache
+location: assets/
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body ""
+== GET /ui/assets?x=1
+status 301
+cache-control: no-cache
+location: assets/?x=1
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body ""
+== GET /ui/sub
+status 301
+cache-control: no-cache
+location: sub/
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body ""
+== GET /ui/sub/index.html
+status 301
+cache-control: no-cache
+location: ./
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body ""
+== GET /ui/remote%45ntry.js
+status 200
+accept-ranges: bytes
+cache-control: no-cache
+content-length: 19
+content-type: text/javascript; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "export const x = 1;"
+== HEAD /ui/nope
+status 404
+cache-control: no-store
+content-type: application/json
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body ""
+== GET /ui/digits.txt|If-None-Match: *
+status 304
+cache-control: no-cache
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body ""
+== GET /ui/digits.txt|If-None-Match: "abc"
+status 200
+accept-ranges: bytes
+cache-control: no-cache
+content-length: 10
+content-type: text/plain; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "0123456789"
+== GET /ui/digits.txt|If-None-Match: W/"x", *
+status 304
+cache-control: no-cache
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body ""
+== HEAD /ui/digits.txt|If-None-Match: *
+status 304
+cache-control: no-cache
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body ""
+== GET /ui/digits.txt|If-Match: "abc"
+status 412
+cache-control: no-cache
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body ""
+== GET /ui/digits.txt|If-Match: *
+status 200
+accept-ranges: bytes
+cache-control: no-cache
+content-length: 10
+content-type: text/plain; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "0123456789"
+== GET /ui/digits.txt|If-Modified-Since: Mon, 02 Jan 2006 15:04:05 GMT
+status 200
+accept-ranges: bytes
+cache-control: no-cache
+content-length: 10
+content-type: text/plain; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "0123456789"
+== GET /ui/digits.txt|Range: bytes=2-4
+status 206
+accept-ranges: bytes
+cache-control: no-cache
+content-length: 3
+content-range: bytes 2-4/10
+content-type: text/plain; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "234"
+== GET /ui/digits.txt|Range: bytes=-3
+status 206
+accept-ranges: bytes
+cache-control: no-cache
+content-length: 3
+content-range: bytes 7-9/10
+content-type: text/plain; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "789"
+== GET /ui/digits.txt|Range: bytes=5-
+status 206
+accept-ranges: bytes
+cache-control: no-cache
+content-length: 5
+content-range: bytes 5-9/10
+content-type: text/plain; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "56789"
+== GET /ui/digits.txt|Range: bytes=8-100
+status 206
+accept-ranges: bytes
+cache-control: no-cache
+content-length: 2
+content-range: bytes 8-9/10
+content-type: text/plain; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "89"
+== GET /ui/digits.txt|Range: bytes=2-4|If-Range: "x"
+status 200
+accept-ranges: bytes
+cache-control: no-cache
+content-length: 10
+content-type: text/plain; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "0123456789"
+== GET /ui/digits.txt|Range: bytes=2-4|If-Range: Mon, 02 Jan 2006 15:04:05 GMT
+status 200
+accept-ranges: bytes
+cache-control: no-cache
+content-length: 10
+content-type: text/plain; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "0123456789"
+== GET /ui/digits.txt|Range: bytes=20-
+status 416
+content-range: bytes */10
+content-type: text/plain; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "invalid range: failed to overlap\n"
+== GET /ui/digits.txt|Range: bytes=5-2
+status 416
+content-type: text/plain; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "invalid range\n"
+== GET /ui/digits.txt|Range: items=1-2
+status 416
+content-type: text/plain; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "invalid range\n"
+== GET /ui/digits.txt|Range: bytes=0-9,0-9
+status 200
+accept-ranges: bytes
+cache-control: no-cache
+content-length: 10
+content-type: text/plain; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "0123456789"
+== GET /ui/digits.txt|Range: bytes=0-1,8-9
+status 206
+accept-ranges: bytes
+cache-control: no-cache
+content-length: 346
+content-type: multipart/byteranges; boundary=BOUNDARY
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "--BOUNDARY\r\nContent-Range: bytes 0-1/10\r\nContent-Type: text/plain; charset=utf-8\r\n\r\n01\r\n--BOUNDARY\r\nContent-Range: bytes 8-9/10\r\nContent-Type: text/plain; charset=utf-8\r\n\r\n89\r\n--BOUNDARY--\r\n"
+== GET /ui/digits.txt|Range: bytes=0-1, 20-30
+status 206
+accept-ranges: bytes
+cache-control: no-cache
+content-length: 2
+content-range: bytes 0-1/10
+content-type: text/plain; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body "01"
+== HEAD /ui/digits.txt|Range: bytes=2-4
+status 206
+accept-ranges: bytes
+cache-control: no-cache
+content-length: 3
+content-range: bytes 2-4/10
+content-type: text/plain; charset=utf-8
+referrer-policy: no-referrer
+x-content-type-options: nosniff
+x-frame-options: DENY
+body ""

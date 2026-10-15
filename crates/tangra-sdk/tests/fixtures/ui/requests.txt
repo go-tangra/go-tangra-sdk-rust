@@ -1,0 +1,44 @@
+GET /ui/remoteEntry.js
+HEAD /ui/remoteEntry.js
+GET /ui/mf-manifest.json
+GET /ui/assets/app-1a2b.js
+GET /ui/assets/style.css
+GET /ui/assets/font.woff2
+GET /ui/assets/data.map
+GET /ui/assets/blob
+GET /ui/assets/icon.svg
+GET /ui/assets/logo.png
+GET /ui/digits.txt
+POST /ui/remoteEntry.js
+PUT /ui/
+DELETE /ui/assets/blob
+GET /ui/
+GET /ui/nope.js
+GET /ui/assets/
+GET /ui/sub/
+GET /ui/assets
+GET /ui/assets?x=1
+GET /ui/sub
+GET /ui/sub/index.html
+GET /ui/remote%45ntry.js
+HEAD /ui/nope
+GET /ui/digits.txt|If-None-Match: *
+GET /ui/digits.txt|If-None-Match: "abc"
+GET /ui/digits.txt|If-None-Match: W/"x", *
+HEAD /ui/digits.txt|If-None-Match: *
+GET /ui/digits.txt|If-Match: "abc"
+GET /ui/digits.txt|If-Match: *
+GET /ui/digits.txt|If-Modified-Since: Mon, 02 Jan 2006 15:04:05 GMT
+GET /ui/digits.txt|Range: bytes=2-4
+GET /ui/digits.txt|Range: bytes=-3
+GET /ui/digits.txt|Range: bytes=5-
+GET /ui/digits.txt|Range: bytes=8-100
+GET /ui/digits.txt|Range: bytes=2-4|If-Range: "x"
+GET /ui/digits.txt|Range: bytes=2-4|If-Range: Mon, 02 Jan 2006 15:04:05 GMT
+GET /ui/digits.txt|Range: bytes=20-
+GET /ui/digits.txt|Range: bytes=5-2
+GET /ui/digits.txt|Range: items=1-2
+GET /ui/digits.txt|Range: bytes=0-9,0-9
+GET /ui/digits.txt|Range: bytes=0-1,8-9
+GET /ui/digits.txt|Range: bytes=0-1, 20-30
+HEAD /ui/digits.txt|Range: bytes=2-4

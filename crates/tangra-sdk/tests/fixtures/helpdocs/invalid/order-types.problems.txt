@@ -1,0 +1,12 @@
+load:
+a.md:4: front-matter: order has the wrong type
+b.md:4: front-matter: order has the wrong type
+c.md:4: front-matter: order has the wrong type
+d.md:4: front-matter: tags has the wrong type
+index.md:4: front-matter: order has the wrong type
+lint:
+a.md:4: front-matter: order has the wrong type
+b.md:4: front-matter: order has the wrong type
+c.md:4: front-matter: order has the wrong type
+d.md:4: front-matter: tags has the wrong type
+index.md:4: front-matter: order has the wrong type
