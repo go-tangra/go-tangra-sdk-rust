@@ -636,7 +636,10 @@ impl Services {
 
     /// The HTTP router. Unmatched paths answer net/http's `404 page not
     /// found`, wrong methods `405 method not allowed` (as the go-tangra HTTP
-    /// server); install your own fallbacks on the router to change that.
+    /// server). The app installs these as the router's fallbacks, replacing
+    /// any the router has: answer unmatched paths yourself with catch-all
+    /// routes (`/{*rest}`), and wrong methods with a fallback on each
+    /// `MethodRouter` (`get(h).fallback(..)`), which the app keeps.
     #[must_use]
     pub fn http(mut self, r: Router) -> Self {
         self.http = Some(r);

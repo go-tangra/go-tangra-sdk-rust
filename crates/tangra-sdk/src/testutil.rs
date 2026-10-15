@@ -17,6 +17,8 @@ use crate::identity::{
     Bundle, Credential, IdentityError, Provider, SpiffeId, Subscribers, Svid, Update, load_certified_key,
 };
 
+pub mod platform;
+
 /// A test failure (string error, so tests can `?` it).
 #[derive(Debug, thiserror::Error)]
 #[error("{0}")]

@@ -195,6 +195,16 @@ pub fn json_response(status: StatusCode, body: String) -> Response {
     r
 }
 
+/// Writes `v` like the deployer's `WriteJSON`: Go `json.Encoder` output
+/// (HTML-safe escaping, trailing newline) with `Content-Type:
+/// application/json` and `Cache-Control: no-store`. Struct fields keep their
+/// declaration order, as `encoding/json` does.
+pub fn json<T: serde::Serialize + ?Sized>(status: StatusCode, v: &T) -> Response {
+    let mut body = json_html_escaped(v);
+    body.push('\n');
+    json_response(status, body)
+}
+
 impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
         json_response(self.status(), self.body())
@@ -254,6 +264,15 @@ mod tests {
             parts.headers,
             String::from_utf8_lossy(&bytes).into_owned(),
         )
+    }
+
+    #[tokio::test]
+    async fn json_is_write_json() {
+        let (status, h, body) = body_of(json(StatusCode::CREATED, &serde_json::json!({"t": "<a&b>"}))).await;
+        assert_eq!(status, StatusCode::CREATED);
+        assert_eq!(body, "{\"t\":\"\\u003ca\\u0026b\\u003e\"}\n");
+        assert_eq!(h["content-type"], "application/json");
+        assert_eq!(h["cache-control"], "no-store");
     }
 
     #[tokio::test]
