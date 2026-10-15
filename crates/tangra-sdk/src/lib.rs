@@ -8,6 +8,9 @@
 #![warn(missing_docs)]
 #![cfg_attr(not(test), deny(clippy::unwrap_used, clippy::expect_used))]
 
+pub mod admin;
+pub mod app;
+pub mod audit;
 pub mod config;
 pub mod correlation;
 pub mod error;
