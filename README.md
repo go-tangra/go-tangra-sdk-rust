@@ -37,7 +37,10 @@ Status: phases 1-5 are done (foundation, identity, transport, runtime,
 gateway/auth integration, help docs, UI, events, catalogue, the example
 module). Nothing is published: there is no crates.io release and no
 released module image. The behaviour is cross-checked against the Go
-sources on the fixtures below; it has not run against a live core.
+sources on the fixtures below, and the example module runs against the
+real core (lcm, auth, gateway built from their repositories) with
+`tools/livestack/livestack.sh`: registration, help docs, permissions, the
+API through the gateway, the UI remote, events, lcm enrolment and renewal.
 
 ## Quick start
 
@@ -108,6 +111,11 @@ Behaviour follows go-tangra v4.10.0 unless listed here.
   still start a gRPC server on a random port.
 - **lcm provider**: renewal runs in one task started by the first `watch`;
   Go starts one per `Watch` call. With a single watcher they behave the same.
+- **First-enrol server certificate (public mode)**: rustls refuses a CA
+  certificate presented as the server's end entity (`CaUsedAsEndEntity`),
+  for example a self-signed `openssl req -x509` edge certificate placed in
+  `SSL_CERT_FILE`; Go accepts it when it is in the root pool. Use a CA and
+  a leaf, `ca_file` + `server_spiffe_id`, or (development) `insecure`.
 - **pprof** does not exist in Rust; `admin.enable_pprof` is accepted and logged.
 - **Policy decision cache**: no LRU cache. Decisions are the same.
 
