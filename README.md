@@ -10,7 +10,10 @@ Crates:
   tonic/prost.
 - `tangra-sdk` - config, logging, error vocabulary, list queries, correlation,
   SPIFFE identity (file and lcm enrolment providers), mTLS (rustls), service
-  policy, admin listener and the `App` runtime (axum HTTP + tonic gRPC).
+  policy, admin listener and the `App` runtime (axum HTTP + tonic gRPC);
+  help docs (`helpdocs`), the UI remote (`ui`, feature `ui`), the Valkey
+  event bus (`events`, feature `events`) and the catalogue descriptor
+  (`catalogue`).
 
 Status: work in progress (phases 1-2: foundation, identity, transport, runtime).
 
@@ -49,3 +52,33 @@ Behaviour follows go-tangra v4.10.0 unless listed here.
   Go starts one per `Watch` call. With a single watcher they behave the same.
 - **pprof** does not exist in Rust; `admin.enable_pprof` is accepted and logged.
 - **Policy decision cache**: no LRU cache. Decisions are the same.
+
+### Help docs, UI, events, catalogue
+
+- **Embedding** uses `include_dir` (`fstree::FileTree::from_embedded`): it
+  always embeds (debug builds too, unlike `rust-embed`) and keeps the
+  directory tree like `embed.FS`. Modules depend on `include_dir` directly
+  (the macro names its crate); `tangra_sdk::include_dir` is the version the
+  SDK accepts.
+- **Help docs** match go-tangra v4.10.0 byte for byte on the committed
+  fixtures (bundle JSON, digest, problem lists; see
+  `crates/tangra-sdk/tests/fixtures/README.md`). YAML syntax errors are
+  reported at the same file and line but worded by yaml-rust2, and a tab
+  right after `key:` is a syntax error (yaml.v3 accepts it). CI can keep the
+  Go `docs-lint` action; `tangra-docs-rs lint [dir]` gives the same output.
+- **UI**: a non-canonical path (`/ui/a//b`, `/ui/../x`) is 404 here; Go's
+  ServeMux first answers it with a 301 to the cleaned path. `/ui` (no
+  slash) is 404 (Go: 301 to `/ui/`). Files served from disk
+  (`Remote::from_dir`) are treated like embedded ones: no `Last-Modified`.
+  Content types use Go's built-in table (what an alpine image without
+  `/etc/mime.types` sees), then sniffing.
+- **Events**: the connection dials `valkey.addresses` in order (valkey-go
+  may treat several addresses as a cluster). The consumer pauses
+  `retry_delay` (1s) after a failed read; Go retries at once.
+- **Catalogue**: only the descriptor (`tangra-module.yaml`) is ported;
+  `catalogue-entry.json`, `bundle.zip` and the attestation stay with the Go
+  `catalogue-entry` action. Give it
+  `permissions-command: cargo run -q --bin <module>-catalogue-permissions`,
+  a binary calling `catalogue::print_permissions`. Host-input patterns are
+  compiled with the `regex` crate (RE2 syntax; Unicode classes differ from
+  Go's ASCII `\d`/`\w` only on non-ASCII input).
