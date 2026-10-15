@@ -1,0 +1,557 @@
+[
+  {
+    "file": "json/ability_action_null.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/abilities/0/action': got null, want array"
+  },
+  {
+    "file": "json/ability_action_upper.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/abilities/0/action/0': 'Read' does not match pattern '^[a-z][a-zA-Z0-9_-]{0,31}$'"
+  },
+  {
+    "file": "json/ability_bad_operator.json",
+    "ok": false,
+    "error": "manifest: invalid: condition operator \"$where\" not allowed"
+  },
+  {
+    "file": "json/ability_huge_condition.json",
+    "ok": false,
+    "error": "manifest: invalid: conditions larger than 4096 bytes"
+  },
+  {
+    "file": "json/ability_undeclared.json",
+    "ok": false,
+    "error": "manifest: invalid: ability requires undeclared permission \"x:y\""
+  },
+  {
+    "file": "json/bad_module_name.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/module': 'Orders!' does not match pattern '^[a-z][a-z0-9-]{1,39}$'"
+  },
+  {
+    "file": "json/conditions_4097.json",
+    "ok": false,
+    "error": "manifest: invalid: conditions larger than 4096 bytes"
+  },
+  {
+    "file": "json/conditions_depth7.json",
+    "ok": false,
+    "error": "manifest: invalid: conditions nested too deeply"
+  },
+  {
+    "file": "json/conditions_html_size.json",
+    "ok": false,
+    "error": "manifest: invalid: conditions larger than 4096 bytes"
+  },
+  {
+    "file": "json/conditions_list_101.json",
+    "ok": false,
+    "error": "manifest: invalid: condition list too long"
+  },
+  {
+    "file": "json/conditions_not_object.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/abilities/0/conditions': got array, want object"
+  },
+  {
+    "file": "json/display_name_80.json",
+    "ok": true,
+    "hash": "02a691fcbb8661ea6c8349efd7f73fe3f5fb9aad682920de1a3b7e615d8007ae"
+  },
+  {
+    "file": "json/display_name_81.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/display_name': maxLength: got 81, want 80"
+  },
+  {
+    "file": "json/display_name_empty.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/display_name': minLength: got 0, want 1"
+  },
+  {
+    "file": "json/dot_prefix.json",
+    "ok": false,
+    "error": "manifest: invalid: prefix \"/api/../x\""
+  },
+  {
+    "file": "json/duplicate_key_last_bad.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/module': 'BAD' does not match pattern '^[a-z][a-z0-9-]{1,39}$'"
+  },
+  {
+    "file": "json/duplicate_method.json",
+    "ok": false,
+    "error": "manifest: invalid: duplicate method /a.b.C/D"
+  },
+  {
+    "file": "json/duplicate_perm.json",
+    "ok": false,
+    "error": "manifest: invalid: permission \"orders:read\""
+  },
+  {
+    "file": "json/duplicate_route.json",
+    "ok": false,
+    "error": "manifest: invalid: duplicate route GET /api/orders"
+  },
+  {
+    "file": "json/exposes_empty.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/remote/exposes': minItems: got 0, want 1"
+  },
+  {
+    "file": "json/integrity_bad.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/remote/integrity': 'md5-abc' does not match pattern '^sha(256|384|512)-[A-Za-z0-9+/=]+$'"
+  },
+  {
+    "file": "json/malformed_json.json",
+    "ok": false,
+    "error": "manifest: invalid: unexpected EOF"
+  },
+  {
+    "file": "json/method_bad_name.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/methods/0/full_method': 'a.b.C/D' does not match pattern '^/[A-Za-z_][A-Za-z0-9_.]*/[A-Za-z_][A-Za-z0-9_]*$'"
+  },
+  {
+    "file": "json/method_undeclared_perm.json",
+    "ok": false,
+    "error": "manifest: invalid: method /a.b.C/D requires undeclared permission \"a:b\""
+  },
+  {
+    "file": "json/method_unprotected.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/methods/0': missing property 'public'"
+  },
+  {
+    "file": "json/module_long.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/module': 'ooooooooooooooooooooooooooooooooooooooooo' does not match pattern '^[a-z][a-z0-9-]{1,39}$'"
+  },
+  {
+    "file": "json/module_one_char.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/module': 'o' does not match pattern '^[a-z][a-z0-9-]{1,39}$'"
+  },
+  {
+    "file": "json/nav_missing_order.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/nav/0': missing property 'order'"
+  },
+  {
+    "file": "json/nav_order_1001.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/nav/0/order': maximum: got 1,001, want 1,000"
+  },
+  {
+    "file": "json/nav_order_float.json",
+    "ok": true,
+    "hash": "db8b31c7ce689e333d623125402446b01ac500b42d6b9110f0643027791cbd0c"
+  },
+  {
+    "file": "json/nav_title_41.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/nav/0/title': maxLength: got 41, want 40"
+  },
+  {
+    "file": "json/nav_undeclared.json",
+    "ok": false,
+    "error": "manifest: invalid: nav entry \"x\" requires undeclared permission \"a:b\""
+  },
+  {
+    "file": "json/ok_ability_fields_reason.json",
+    "ok": true,
+    "hash": "f6b286285a7eb16d21f6bf151a3258688163e256ec006e701e488db7f9e32906"
+  },
+  {
+    "file": "json/ok_catch_all.json",
+    "ok": true,
+    "hash": "88ca98cd5fd16dff82aefa1792eb9880f75b8d8a7761f94025aa5d621c73d0bb"
+  },
+  {
+    "file": "json/ok_conditions_4096.json",
+    "ok": true,
+    "hash": "fdc721e662dc56fb70cbe934e20dcab0c5f31961b07a5b2d6c7a7e509bd05b18"
+  },
+  {
+    "file": "json/ok_conditions_depth6.json",
+    "ok": true,
+    "hash": "70322a5306f1eac4629afdd4a4b14ecd83152415c0b89d2dcaa5a7d8d5a02000"
+  },
+  {
+    "file": "json/ok_conditions_empty.json",
+    "ok": true,
+    "hash": "f5b887c042192d72d9323d4537a3b81fb21db55a2b48308f405e8d69a71cbd4c"
+  },
+  {
+    "file": "json/ok_conditions_numbers.json",
+    "ok": true,
+    "hash": "bc2789263ee084a12e2a0c5a8e81493d671849b4644f06755bdb25bd02738fb4"
+  },
+  {
+    "file": "json/ok_duplicate_key_last_wins.json",
+    "ok": true,
+    "hash": "65a28aff2b1bc84e1dfcd9b0618751088b4d14ff1f525a635f6d161421dbf6f2"
+  },
+  {
+    "file": "json/ok_exposes_header.json",
+    "ok": true,
+    "hash": "9133f52af249ec50c35eabd0d9e650fafade82252c8c14aa287926ef9b61db8a"
+  },
+  {
+    "file": "json/ok_integrity.json",
+    "ok": true,
+    "hash": "b239469f98c738d23348598e3abea3c6a06aae99d7c3b6686ae818e55f714122"
+  },
+  {
+    "file": "json/ok_prefixes_unsorted.json",
+    "ok": true,
+    "hash": "65a28aff2b1bc84e1dfcd9b0618751088b4d14ff1f525a635f6d161421dbf6f2"
+  },
+  {
+    "file": "json/ok_route_path_param_under.json",
+    "ok": true,
+    "hash": "3496d21a567b5ad28f920e41530cc1b5c7c8845ad73da8c28f3eaff632b464fd"
+  },
+  {
+    "file": "json/ok_route_public_false_perm.json",
+    "ok": true,
+    "hash": "f2dc31c9376ef7e9f697b61b6b3ac8284f050b075d0ab41fb9ea9f9ed27958c0"
+  },
+  {
+    "file": "json/ok_stream_24h.json",
+    "ok": true,
+    "hash": "926b4d33747119a869cde12161ac51d322430b4660979fc529af47ee69827294"
+  },
+  {
+    "file": "json/ok_timeout_1ms.json",
+    "ok": true,
+    "hash": "4d7038e8b544d66d3145398e0d1622d4691ed7707d5839ca28d531edb55771cf"
+  },
+  {
+    "file": "json/ok_timeout_5m.json",
+    "ok": true,
+    "hash": "affe2cb337a547e921944714d454eac2274300987ebd42908bbf8f452c8bb8d9"
+  },
+  {
+    "file": "json/ok_unicode_strings.json",
+    "ok": true,
+    "hash": "307d3a0e98a88c548f659a13bae65be474323b51b423292f7321f3de1fa362a8"
+  },
+  {
+    "file": "json/ok_valid.json",
+    "ok": true,
+    "hash": "65a28aff2b1bc84e1dfcd9b0618751088b4d14ff1f525a635f6d161421dbf6f2"
+  },
+  {
+    "file": "json/oversized.json",
+    "ok": false,
+    "error": "manifest: invalid: manifest larger than 262144 bytes"
+  },
+  {
+    "file": "json/permission_description_257.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/permissions/0/description': maxLength: got 257, want 256"
+  },
+  {
+    "file": "json/permission_upper.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/permissions/0/resource': 'Orders' does not match pattern '^[a-z0-9][a-z0-9_.-]{0,63}$'"
+  },
+  {
+    "file": "json/prefix_overlap.json",
+    "ok": false,
+    "error": "manifest: invalid: prefixes \"/api\" and \"/api/orders\" overlap"
+  },
+  {
+    "file": "json/prefix_sibling_names.json",
+    "ok": true,
+    "hash": "a42ceb41308903eb68351e26f4cee003de47aa1b706a400fb0fee13172397128"
+  },
+  {
+    "file": "json/prefix_trailing_slash.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/prefixes/0': '/api/orders/' does not match pattern '^/[A-Za-z0-9._~-]+(/[A-Za-z0-9._~-]+)*$'"
+  },
+  {
+    "file": "json/prefix_unique.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/prefixes': items at 0 and 1 are equal"
+  },
+  {
+    "file": "json/prefixes_empty.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/prefixes': minItems: got 0, want 1"
+  },
+  {
+    "file": "json/prefixes_nine.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/prefixes': maxItems: got 9, want 8"
+  },
+  {
+    "file": "json/relative_prefix.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/prefixes/0': 'api/orders' does not match pattern '^/[A-Za-z0-9._~-]+(/[A-Za-z0-9._~-]+)*$'"
+  },
+  {
+    "file": "json/remote_bad_expose.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/remote/exposes/0': value must be one of './routes', './nav', './boot', './header'"
+  },
+  {
+    "file": "json/remote_wrong_entry.json",
+    "ok": false,
+    "error": "manifest: invalid: remote entry must be /m/orders/mf-manifest.json"
+  },
+  {
+    "file": "json/route_bad_param.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/routes/0/path': '/api/orders/{Id}' does not match pattern '^/[A-Za-z0-9._~-]+(/([A-Za-z0-9._~-]+|\\\\{[a-z][a-z0-9_]*\\\\}))*(/\\\\{[a-z][a-z0-9_]*\\\\.\\\\.\\\\.\\\\})?$'"
+  },
+  {
+    "file": "json/route_body_float_int.json",
+    "ok": true,
+    "hash": "24ea890727f67821d9049868e68d1be594b16788e40c61e3bd0276de53eb1cb1"
+  },
+  {
+    "file": "json/route_body_fraction.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/routes/0/max_body_bytes': got number, want integer"
+  },
+  {
+    "file": "json/route_body_max.json",
+    "ok": true,
+    "hash": "387ef56e2a4beb4ba09294a2d0a16b3ccb8f381d13f0c8c216ff86aa92522f98"
+  },
+  {
+    "file": "json/route_body_negative.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/routes/0/max_body_bytes': minimum: got -1, want 0"
+  },
+  {
+    "file": "json/route_body_over.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/routes/0/max_body_bytes': maximum: got 1.073741825×10⁰⁹, want 1.073741824×10⁰⁹"
+  },
+  {
+    "file": "json/route_catch_all_not_last.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/routes/0/path': '/api/orders/{rest...}/x' does not match pattern '^/[A-Za-z0-9._~-]+(/([A-Za-z0-9._~-]+|\\\\{[a-z][a-z0-9_]*\\\\}))*(/\\\\{[a-z][a-z0-9_]*\\\\.\\\\.\\\\.\\\\})?$'"
+  },
+  {
+    "file": "json/route_client_address.json",
+    "ok": true,
+    "hash": "9a6aa646262644faeeaaa5f89c3ec111e17a835782ae4d4189b09cb093fb3907"
+  },
+  {
+    "file": "json/route_long_timeout.json",
+    "ok": false,
+    "error": "manifest: invalid: route timeout \"10m\""
+  },
+  {
+    "file": "json/route_method_lower.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/routes/0/method': value must be one of 'GET', 'POST', 'PUT', 'PATCH', 'DELETE'"
+  },
+  {
+    "file": "json/route_outside_prefix.json",
+    "ok": false,
+    "error": "manifest: invalid: route GET /elsewhere outside the owned prefixes"
+  },
+  {
+    "file": "json/route_path_param_upper_name.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/routes/0/path': '/api/orders/{iD}' does not match pattern '^/[A-Za-z0-9._~-]+(/([A-Za-z0-9._~-]+|\\\\{[a-z][a-z0-9_]*\\\\}))*(/\\\\{[a-z][a-z0-9_]*\\\\.\\\\.\\\\.\\\\})?$'"
+  },
+  {
+    "file": "json/route_path_space.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/routes/0/path': '/api/orders/a b' does not match pattern '^/[A-Za-z0-9._~-]+(/([A-Za-z0-9._~-]+|\\\\{[a-z][a-z0-9_]*\\\\}))*(/\\\\{[a-z][a-z0-9_]*\\\\.\\\\.\\\\.\\\\})?$'"
+  },
+  {
+    "file": "json/route_prefix_exact.json",
+    "ok": true,
+    "hash": "d68cba705f737c54e0d123bb4c55cfee9a94e3cc5440a50d6f853ff7f9be4a0b"
+  },
+  {
+    "file": "json/route_prefix_sibling.json",
+    "ok": false,
+    "error": "manifest: invalid: route GET /api/ordersx outside the owned prefixes"
+  },
+  {
+    "file": "json/route_public_false_only.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/routes/0/public': value must be true"
+  },
+  {
+    "file": "json/route_public_perm.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/routes/0': 'not' failed"
+  },
+  {
+    "file": "json/route_undeclared_perm.json",
+    "ok": false,
+    "error": "manifest: invalid: route GET /api/orders requires undeclared permission \"orders:nope\""
+  },
+  {
+    "file": "json/route_unprotected.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/routes/0': missing property 'public'"
+  },
+  {
+    "file": "json/routes_501.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/routes': maxItems: got 501, want 500"
+  },
+  {
+    "file": "json/stream_0s.json",
+    "ok": false,
+    "error": "manifest: invalid: max_stream_duration \"0s\""
+  },
+  {
+    "file": "json/stream_25h.json",
+    "ok": false,
+    "error": "manifest: invalid: max_stream_duration \"25h\""
+  },
+  {
+    "file": "json/timeout_0ms.json",
+    "ok": false,
+    "error": "manifest: invalid: route timeout \"0ms\""
+  },
+  {
+    "file": "json/timeout_301s.json",
+    "ok": false,
+    "error": "manifest: invalid: route timeout \"301s\""
+  },
+  {
+    "file": "json/timeout_hours_grammar.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/routes/0/timeout': '1h' does not match pattern '^[0-9]+(ms|s|m)$'"
+  },
+  {
+    "file": "json/top_level_array.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '': got array, want object"
+  },
+  {
+    "file": "json/trailing_garbage.json",
+    "ok": false,
+    "error": "manifest: invalid: invalid character after top-level value"
+  },
+  {
+    "file": "json/unknown_field.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '': additional properties 'extra' not allowed"
+  },
+  {
+    "file": "json/version_two_parts.json",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/version': '1.2' does not match pattern '^[0-9]+\\\\.[0-9]+\\\\.[0-9]+$'"
+  },
+  {
+    "file": "pb/go_deployer.pb",
+    "ok": true,
+    "hash": "22cb19558db0826592bfefdb181535c383e2e7b332bc618086b37c5781a5f225"
+  },
+  {
+    "file": "pb/go_warden.pb",
+    "ok": true,
+    "hash": "ffab79deaefa4a85db47bc7cad7b9711ff94ee316673f531bee66a2c3b7791c7"
+  },
+  {
+    "file": "pb/rust_ability_empty_conditions.pb",
+    "ok": true,
+    "hash": "49b41f9d84d2b2db088378eba91ad0e4bcea30f6885b14112e33cb654305519b"
+  },
+  {
+    "file": "pb/rust_ability_nil_action.pb",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/abilities/0/action': got null, want array"
+  },
+  {
+    "file": "pb/rust_body_wraps_negative.pb",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/routes/1/max_body_bytes': minimum: got -1, want 0"
+  },
+  {
+    "file": "pb/rust_conditions.pb",
+    "ok": true,
+    "hash": "1e31e92a41a5cc939729a8d122265bb35f1d3047f3fe4be906d55bb1ae57c09c"
+  },
+  {
+    "file": "pb/rust_conditions_bad_op.pb",
+    "ok": false,
+    "error": "manifest: invalid: condition operator \"$where\" not allowed"
+  },
+  {
+    "file": "pb/rust_deployer.pb",
+    "ok": true,
+    "hash": "22cb19558db0826592bfefdb181535c383e2e7b332bc618086b37c5781a5f225"
+  },
+  {
+    "file": "pb/rust_minimal.pb",
+    "ok": true,
+    "hash": "a9aa730f47b86337e8a583afe61b25fb0864f82f2a7ddbb5241cbceeda400f65"
+  },
+  {
+    "file": "pb/rust_no_exposes.pb",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/remote/exposes': minItems: got 0, want 1"
+  },
+  {
+    "file": "pb/rust_no_remote.pb",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/remote/exposes': minItems: got 0, want 1"
+  },
+  {
+    "file": "pb/rust_overlap_after_normalize.pb",
+    "ok": false,
+    "error": "manifest: invalid: prefixes \"/api/orders\" and \"/api/orders/v1\" overlap"
+  },
+  {
+    "file": "pb/rust_public_and_perm.pb",
+    "ok": false,
+    "error": "manifest: invalid: schema: at '/routes/1': 'not' failed"
+  },
+  {
+    "file": "pb/rust_stream_method.pb",
+    "ok": true,
+    "hash": "91c4b0d6690ddf33dc7f0c8dc869b39576f1ec4811e26fa3096a063888af9658"
+  },
+  {
+    "file": "pb/rust_stream_too_long.pb",
+    "ok": false,
+    "error": "manifest: invalid: max_stream_duration \"86401s\""
+  },
+  {
+    "file": "pb/rust_timeout_301s.pb",
+    "ok": false,
+    "error": "manifest: invalid: route timeout \"301s\""
+  },
+  {
+    "file": "pb/rust_timeout_sub_ms.pb",
+    "ok": false,
+    "error": "manifest: invalid: route timeout \"0ms\""
+  },
+  {
+    "file": "pb/rust_timeouts.pb",
+    "ok": true,
+    "hash": "dcb2f4ee2549875ab9770a569409efe9af0dc85b16375fcba7bc9a4aada269cf"
+  },
+  {
+    "file": "pb/rust_trailing_slash_prefix.pb",
+    "ok": true,
+    "hash": "a9aa730f47b86337e8a583afe61b25fb0864f82f2a7ddbb5241cbceeda400f65"
+  },
+  {
+    "file": "pb/rust_undeclared_route_perm.pb",
+    "ok": false,
+    "error": "manifest: invalid: route GET /api/orders/v1/x requires undeclared permission \"orders:write\""
+  },
+  {
+    "file": "pb/rust_unsorted_prefixes.pb",
+    "ok": true,
+    "hash": "7560ec7bfb33600a122d5bf6c534fbc334587b1b73ef92e52c5c47c73013dcb9"
+  }
+]

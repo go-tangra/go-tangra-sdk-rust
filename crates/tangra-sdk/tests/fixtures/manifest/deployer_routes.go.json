@@ -1,0 +1,281 @@
+[
+  {
+    "method": "GET",
+    "path": "/api/deployer/v1/configurations",
+    "permission": "configurations:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/deployer/v1/configurations/{id}",
+    "permission": "configurations:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/deployer/v1/jobs",
+    "permission": "jobs:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/deployer/v1/jobs/{id}",
+    "permission": "jobs:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/deployer/v1/jobs/{id}/children",
+    "permission": "jobs:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/deployer/v1/jobs/{id}/history",
+    "permission": "jobs:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/deployer/v1/jobs/{id}/result",
+    "permission": "jobs:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/deployer/v1/providers",
+    "permission": "configurations:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/deployer/v1/statistics",
+    "permission": "stats:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/deployer/v1/statistics/tenant",
+    "permission": "stats:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/deployer/v1/targets",
+    "permission": "targets:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/deployer/v1/targets/{id}",
+    "permission": "targets:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/deployer/v1/targets/{id}/configurations",
+    "permission": "targets:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/deployer/v1/backup/export",
+    "permission": "backup:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/deployer/v1/backup/import",
+    "permission": "backup:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/deployer/v1/configurations",
+    "permission": "configurations:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/deployer/v1/configurations/validate",
+    "permission": "configurations:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 30,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/deployer/v1/configurations/{id}/remove",
+    "permission": "configurations:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/deployer/v1/deploy",
+    "permission": "deploy:execute",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 30,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/deployer/v1/deploy/configurations",
+    "permission": "deploy:execute",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 30,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/deployer/v1/deploy/target",
+    "permission": "deploy:execute",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 30,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/deployer/v1/deploy/{job_id}/rollback",
+    "permission": "deploy:execute",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 60,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/deployer/v1/deploy/{job_id}/verify",
+    "permission": "deploy:execute",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 60,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/deployer/v1/jobs/{id}/cancel",
+    "permission": "jobs:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/deployer/v1/jobs/{id}/retry",
+    "permission": "jobs:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/deployer/v1/targets",
+    "permission": "targets:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/deployer/v1/targets/{id}/configurations",
+    "permission": "targets:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/deployer/v1/targets/{id}/configurations/remove",
+    "permission": "targets:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/deployer/v1/targets/{id}/remove",
+    "permission": "targets:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "PUT",
+    "path": "/api/deployer/v1/configurations/{id}",
+    "permission": "configurations:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "PUT",
+    "path": "/api/deployer/v1/targets/{id}",
+    "permission": "targets:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  }
+]

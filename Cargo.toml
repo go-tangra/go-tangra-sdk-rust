@@ -60,4 +60,7 @@ async-trait = "0.1"
 tempfile = "3"
 time = "0.3"
 pem = "3"
+base64 = "0.22"
+regex = "1"
+ring = "0.17"
 spiffe = { version = "0.18", default-features = false, features = ["workload-api-x509"] }

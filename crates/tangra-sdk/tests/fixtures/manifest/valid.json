@@ -1,0 +1,27 @@
+{
+  "module": "orders",
+  "display_name": "Orders",
+  "version": "1.2.0",
+  "prefixes": ["/api/orders", "/orders-reports"],
+  "routes": [
+    {"method": "GET", "path": "/api/orders", "permission": "orders:read"},
+    {"method": "GET", "path": "/api/orders/{id}", "permission": "orders:read", "timeout": "5s"},
+    {"method": "POST", "path": "/api/orders", "permission": "orders:write", "max_body_bytes": 65536},
+    {"method": "GET", "path": "/orders-reports/health", "public": true}
+  ],
+  "methods": [
+    {"full_method": "/orders.v1.Orders/Get", "permission": "orders:read"},
+    {"full_method": "/orders.v1.Orders/Watch", "permission": "orders:read", "streaming": true, "max_stream_duration": "30m"},
+    {"full_method": "/orders.v1.Orders/Ping", "public": true}
+  ],
+  "permissions": [
+    {"resource": "orders", "action": "read", "description": "Read orders"},
+    {"resource": "orders", "action": "write", "description": "Create and update orders"}
+  ],
+  "abilities": [
+    {"action": ["read"], "subject": ["Order"], "requires": "orders:read"},
+    {"action": ["update", "delete"], "subject": ["Order"], "conditions": {"ownerId": {"$eq": "${user.id}"}, "status": {"$in": ["draft", "open"]}}, "requires": "orders:write"}
+  ],
+  "remote": {"entry": "/m/orders/mf-manifest.json", "exposes": ["./routes", "./nav"]},
+  "nav": [{"title": "Orders", "path": "/orders", "icon": "mdi-cart", "order": 10, "requires": "orders:read"}]
+}

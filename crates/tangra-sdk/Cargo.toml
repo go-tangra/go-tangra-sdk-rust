@@ -53,6 +53,11 @@ async-trait.workspace = true
 time.workspace = true
 pem.workspace = true
 spiffe = { workspace = true, optional = true }
+# Phase 3 (auth, gateway, manifest).
+base64.workspace = true
+regex.workspace = true
+ring.workspace = true
+prost-types.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true

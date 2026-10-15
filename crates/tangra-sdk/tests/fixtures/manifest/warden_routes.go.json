@@ -1,0 +1,371 @@
+[
+  {
+    "method": "DELETE",
+    "path": "/api/warden/v1/secrets/{id}/totp",
+    "permission": "secrets:write",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/warden/v1/access/check",
+    "permission": "secrets:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/warden/v1/access/effective",
+    "permission": "secrets:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/warden/v1/access/resources",
+    "permission": "secrets:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/warden/v1/audit",
+    "permission": "stats:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/warden/v1/folders",
+    "permission": "folders:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/warden/v1/folders/tree",
+    "permission": "folders:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/warden/v1/folders/{id}",
+    "permission": "folders:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/warden/v1/grants",
+    "permission": "permissions:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/warden/v1/health",
+    "permission": "stats:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/warden/v1/secrets",
+    "permission": "secrets:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/warden/v1/secrets/search",
+    "permission": "secrets:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/warden/v1/secrets/{id}",
+    "permission": "secrets:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/warden/v1/secrets/{id}/password",
+    "permission": "secrets:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/warden/v1/secrets/{id}/shares",
+    "permission": "secrets:share",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/warden/v1/secrets/{id}/totp",
+    "permission": "secrets:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/warden/v1/secrets/{id}/versions",
+    "permission": "secrets:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/api/warden/v1/stats",
+    "permission": "stats:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "GET",
+    "path": "/warden/share",
+    "permission": "",
+    "public": true,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/warden/v1/backup/export",
+    "permission": "backup:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 120,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/warden/v1/backup/import",
+    "permission": "backup:manage",
+    "public": false,
+    "max_body_bytes": 16777216,
+    "timeout_seconds": 120,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/warden/v1/folders",
+    "permission": "folders:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/warden/v1/folders/{id}/move",
+    "permission": "folders:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/warden/v1/folders/{id}/remove",
+    "permission": "folders:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/warden/v1/generate",
+    "permission": "secrets:read",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/warden/v1/grants",
+    "permission": "permissions:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/warden/v1/grants/{id}/revoke",
+    "permission": "permissions:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/warden/v1/secrets",
+    "permission": "secrets:write",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/warden/v1/secrets/{id}/move",
+    "permission": "secrets:write",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/warden/v1/secrets/{id}/remove",
+    "permission": "secrets:delete",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/warden/v1/secrets/{id}/shares",
+    "permission": "secrets:share",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/warden/v1/secrets/{id}/versions/{version}/restore",
+    "permission": "secrets:write",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/warden/v1/share/open",
+    "permission": "",
+    "public": true,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": true
+  },
+  {
+    "method": "POST",
+    "path": "/api/warden/v1/shares/{id}/cancel",
+    "permission": "secrets:share",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/warden/v1/transfer/bitwarden/export",
+    "permission": "transfer:export",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 120,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/warden/v1/transfer/bitwarden/import",
+    "permission": "transfer:import",
+    "public": false,
+    "max_body_bytes": 16777216,
+    "timeout_seconds": 120,
+    "client_address": false
+  },
+  {
+    "method": "POST",
+    "path": "/api/warden/v1/transfer/bitwarden/validate",
+    "permission": "transfer:import",
+    "public": false,
+    "max_body_bytes": 16777216,
+    "timeout_seconds": 120,
+    "client_address": false
+  },
+  {
+    "method": "PUT",
+    "path": "/api/warden/v1/folders/{id}",
+    "permission": "folders:manage",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "PUT",
+    "path": "/api/warden/v1/secrets/{id}",
+    "permission": "secrets:write",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "PUT",
+    "path": "/api/warden/v1/secrets/{id}/password",
+    "permission": "secrets:write",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  },
+  {
+    "method": "PUT",
+    "path": "/api/warden/v1/secrets/{id}/totp",
+    "permission": "secrets:write",
+    "public": false,
+    "max_body_bytes": 0,
+    "timeout_seconds": 0,
+    "client_address": false
+  }
+]

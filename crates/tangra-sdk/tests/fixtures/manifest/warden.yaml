@@ -1,0 +1,397 @@
+openapi: 3.1.0
+info:
+  title: Warden — browser API
+  version: 1.0.0
+  description: |
+    Served by the warden module through the application gateway under /api/warden/v1.
+    Every request carries the platform token forwarded by the gateway (verified with
+    pkg/authclient); the gateway enforces the x-freya-permission of each operation before
+    forwarding, warden enforces the Zanzibar grant on the resource. Errors are
+    {"reason": "<closed vocabulary>"}: unauthenticated, forbidden, not_found,
+    validation_failed, conflict, temporarily_unavailable, rate_limited, body_too_large,
+    vault_unavailable. Passwords and seeds appear only in the operations marked "material".
+servers: [{ url: https://platform.example.org }]
+components:
+  parameters:
+    csrf: { name: X-CSRF-Token, in: header, required: false, schema: { type: string } }
+    id: { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+    cursor: { name: cursor, in: query, schema: { type: string } }
+    limit: { name: limit, in: query, description: 'legacy cursor paging (one release); not combinable with page/page_size/sort/order', schema: { type: integer, minimum: 1, maximum: 100 } }
+    # List contract (go-tangra specs/032-server-side-tables): an invalid value is 422 validation_failed {detail: {param}}.
+    page: { name: page, in: query, schema: { type: integer, minimum: 1, maximum: 2147483647 } }
+    pageSize: { name: page_size, in: query, schema: { type: integer, minimum: 1, maximum: 200 } }
+    order: { name: order, in: query, schema: { type: string, enum: [asc, desc] } }
+  schemas:
+    Error: { type: object, required: [reason], properties: { reason: { type: string }, detail: { type: object, properties: { param: { type: string } } } } }
+    PageMeta:
+      type: object
+      description: 'list-contract page: items (at most page_size) plus the exact total of records matching the filters and visible to the caller; page is the page returned (a page beyond the end answers the last page)'
+      required: [items, total, page, page_size, sort, order]
+      properties:
+        total: { type: integer }
+        page: { type: integer }
+        page_size: { type: integer }
+        sort: { type: string }
+        order: { type: string, enum: [asc, desc] }
+    SecretPage:
+      allOf:
+        - $ref: '#/components/schemas/PageMeta'
+        - { type: object, properties: { items: { type: array, items: { $ref: '#/components/schemas/Secret' } } } }
+    SharePage:
+      allOf:
+        - $ref: '#/components/schemas/PageMeta'
+        - { type: object, properties: { items: { type: array, items: { $ref: '#/components/schemas/Share' } } } }
+    AuditPage:
+      allOf:
+        - $ref: '#/components/schemas/PageMeta'
+        - { type: object, properties: { items: { type: array, items: { type: object } } } }
+    Name: { type: string, minLength: 1, maxLength: 200, pattern: '^[^\p{Cc}]+$' }
+    Folder:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        parent_id: { type: [string, 'null'], format: uuid }
+        name: { type: string }
+        path: { type: string }
+        secret_count: { type: integer }
+        created_by: { type: string }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+        permissions: { $ref: '#/components/schemas/Permissions' }
+    FolderNode:
+      type: object
+      properties:
+        folder: { $ref: '#/components/schemas/Folder' }
+        children: { type: array, items: { $ref: '#/components/schemas/FolderNode' } }
+    Permissions:
+      type: object
+      properties: { read: { type: boolean }, write: { type: boolean }, delete: { type: boolean }, share: { type: boolean } }
+    Secret:
+      type: object
+      description: never carries the password or the seed
+      properties:
+        id: { type: string, format: uuid }
+        folder_id: { type: [string, 'null'], format: uuid }
+        folder_path: { type: string }
+        name: { type: string }
+        username: { type: string }
+        host_url: { type: string }
+        description: { type: string }
+        metadata: { type: object }
+        current_version: { type: integer }
+        has_totp: { type: boolean }
+        created_by: { type: string }
+        updated_by: { type: string }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+        permissions: { $ref: '#/components/schemas/Permissions' }
+    SecretInput:
+      type: object
+      additionalProperties: false
+      required: [name]
+      properties:
+        folder_id: { type: [string, 'null'], format: uuid }
+        name: { $ref: '#/components/schemas/Name' }
+        username: { type: string, maxLength: 200 }
+        host_url: { type: string, maxLength: 2048 }
+        description: { type: string, maxLength: 2000 }
+        metadata: { type: object, description: '<= 16 KiB serialised; never indexed or logged' }
+        password: { type: string, maxLength: 4096, description: 'material; required on create' }
+        totp: { type: string, maxLength: 512, description: 'material: otpauth URL or base32 seed' }
+        comment: { type: string, maxLength: 500 }
+    Version:
+      type: object
+      properties:
+        version: { type: integer }
+        comment: { type: string }
+        checksum: { type: string }
+        source: { type: string }
+        material_missing: { type: boolean }
+        created_by: { type: string }
+        created_at: { type: string, format: date-time }
+    Grant:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        resource_type: { type: string, enum: [folder, secret] }
+        resource_id: { type: string, format: uuid }
+        subject_type: { type: string, enum: [user, role, tenant] }
+        subject_id: { type: string }
+        relation: { type: string, enum: [owner, editor, viewer, sharer] }
+        granted_by: { type: string }
+        granted_at: { type: string, format: date-time }
+        expires_at: { type: [string, 'null'], format: date-time }
+    GrantInput:
+      type: object
+      additionalProperties: false
+      required: [resource_type, resource_id, subject_type, relation]
+      properties:
+        resource_type: { type: string, enum: [folder, secret] }
+        resource_id: { type: string, format: uuid }
+        subject_type: { type: string, enum: [user, role, tenant] }
+        subject_id: { type: string, maxLength: 128, description: 'user id or role slug; empty for tenant' }
+        relation: { type: string, enum: [owner, editor, viewer, sharer] }
+        expires_at: { type: [string, 'null'], format: date-time }
+    Share:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        secret_id: { type: string, format: uuid }
+        recipient_email: { type: string }
+        max_opens: { type: integer }
+        opens: { type: integer }
+        expires_at: { type: string, format: date-time }
+        state: { type: string, enum: [active, consumed, expired, cancelled] }
+        created_at: { type: string, format: date-time }
+    ShareInput:
+      type: object
+      additionalProperties: false
+      required: [recipient_email]
+      properties:
+        recipient_email: { type: string, format: email, maxLength: 254 }
+        message: { type: string, maxLength: 1000 }
+        validity_seconds: { type: integer, minimum: 300, maximum: 604800, default: 3600 }
+        max_opens: { type: integer, minimum: 1, maximum: 10, default: 1 }
+        cidr: { type: string, maxLength: 43 }
+        region: { type: string, pattern: '^[A-Z]{2}$' }
+    TransferReport:
+      type: object
+      properties:
+        folders: { type: integer }
+        items: { type: integer }
+        created: { type: integer }
+        renamed: { type: integer }
+        skipped: { type: integer }
+        overwritten: { type: integer }
+        failed: { type: integer }
+        collisions: { type: array, items: { type: object, properties: { name: { type: string }, folder: { type: string } } } }
+        problems: { type: array, items: { type: object, properties: { index: { type: integer }, reason: { type: string } } } }
+        warnings: { type: array, items: { type: string } }
+    Stats:
+      type: object
+      properties:
+        secrets: { type: integer }
+        secrets_with_totp: { type: integer }
+        folders: { type: integer }
+        versions: { type: integer }
+        grants: { type: object, additionalProperties: { type: integer } }
+        shares: { type: object, additionalProperties: { type: integer } }
+        operations_24h: { type: integer }
+paths:
+  # ---- folders ---------------------------------------------------------------
+  /api/warden/v1/folders:
+    get:
+      operationId: listFolders
+      x-freya-permission: folders:manage
+      parameters: [{ name: parent_id, in: query, schema: { type: string, format: uuid } }]
+      responses: { '200': { description: 'children of parent (root when omitted), only those the caller may read' } }
+    post:
+      operationId: createFolder
+      x-freya-permission: folders:manage
+      parameters: [{ $ref: '#/components/parameters/csrf' }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: false, required: [name], properties: { parent_id: { type: [string, 'null'], format: uuid }, name: { type: string, minLength: 1, maxLength: 100, pattern: '^[^\p{Cc}/]+$' } } } } } }
+      responses: { '201': { description: 'created; creator becomes owner' }, '409': { description: 'conflict (sibling name)' } }
+  /api/warden/v1/folders/tree:
+    get:
+      operationId: folderTree
+      x-freya-permission: folders:manage
+      responses: { '200': { description: 'readable subtree(s) as FolderNode[] (<= 10k folders)' } }
+  /api/warden/v1/folders/{id}:
+    get: { operationId: getFolder, x-freya-permission: folders:manage, parameters: [{ $ref: '#/components/parameters/id' }], responses: { '200': { description: folder }, '404': { description: not_found } } }
+    put:
+      operationId: renameFolder
+      x-freya-permission: folders:manage
+      parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: false, required: [name], properties: { name: { type: string, minLength: 1, maxLength: 100, pattern: '^[^\p{Cc}/]+$' } } } } } }
+      responses: { '200': { description: renamed } }
+  /api/warden/v1/folders/{id}/move:
+    post:
+      operationId: moveFolder
+      x-freya-permission: folders:manage
+      parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: false, properties: { parent_id: { type: [string, 'null'], format: uuid } } } } } }
+      responses: { '200': { description: 'moved; subtree paths and ancestors rewritten' }, '403': { description: 'forbidden: no write on the folder, or the new parent is readable but not writable' }, '404': { description: 'not_found: the folder, or the new parent is missing, of another tenant or not readable by the caller (never revealed); nothing changes' }, '409': { description: 'cycle or sibling name' } }
+  /api/warden/v1/folders/{id}/remove:
+    post:
+      operationId: deleteFolder
+      x-freya-permission: folders:manage
+      parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }]
+      requestBody: { content: { application/json: { schema: { type: object, additionalProperties: false, properties: { recursive: { type: boolean, default: false } } } } } }
+      responses: { '204': { description: deleted }, '409': { description: 'not empty (recursive=false)' } }
+  # ---- secrets ---------------------------------------------------------------
+  /api/warden/v1/secrets:
+    get:
+      operationId: listSecrets
+      x-freya-permission: secrets:read
+      parameters: [{ name: folder_id, in: query, schema: { type: string, format: uuid } }, { name: root, in: query, schema: { type: boolean } }, { $ref: '#/components/parameters/page' }, { $ref: '#/components/parameters/pageSize' }, { name: sort, in: query, schema: { type: string, enum: [name, updated_at, created_at] } }, { $ref: '#/components/parameters/order' }, { $ref: '#/components/parameters/cursor' }, { $ref: '#/components/parameters/limit' }]
+      description: 'secrets of a folder (root when folder_id is omitted) the caller may read: under a readable folder all of them, at the root those granted directly; visibility applies to the total too. Default sort name asc. With only cursor/limit (legacy, one release): {items, next, total}.'
+      responses: { '200': { description: 'page of secrets without material', content: { application/json: { schema: { $ref: '#/components/schemas/SecretPage' } } } }, '422': { description: 'validation_failed {detail: {param}} for an invalid page, page_size, sort or order, or cursor/limit mixed with them', content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } } }
+    post:
+      operationId: createSecret
+      x-freya-permission: secrets:write
+      parameters: [{ $ref: '#/components/parameters/csrf' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/SecretInput' } } } }
+      responses: { '201': { description: 'created (version 1); creator becomes owner' }, '503': { description: vault_unavailable } }
+  /api/warden/v1/secrets/search:
+    get:
+      operationId: searchSecrets
+      x-freya-permission: secrets:read
+      parameters: [{ name: q, in: query, required: true, schema: { type: string, minLength: 1, maxLength: 200 } }, { $ref: '#/components/parameters/page' }, { $ref: '#/components/parameters/pageSize' }, { name: sort, in: query, schema: { type: string, enum: [relevance, name, updated_at] } }, { $ref: '#/components/parameters/order' }, { $ref: '#/components/parameters/cursor' }, { $ref: '#/components/parameters/limit' }]
+      description: 'readable matches of name, username, host, description or folder path (material is never searched); default sort relevance desc (name matches first, then name order). With only cursor/limit (legacy, one release): {items, next, total}.'
+      responses: { '200': { description: 'page of readable matches, no material', content: { application/json: { schema: { $ref: '#/components/schemas/SecretPage' } } } }, '422': { description: 'validation_failed {detail: {param}} for an invalid page, page_size, sort or order, or cursor/limit mixed with them', content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } } }
+  /api/warden/v1/secrets/{id}:
+    get: { operationId: getSecret, x-freya-permission: secrets:read, parameters: [{ $ref: '#/components/parameters/id' }], responses: { '200': { description: 'secret without material' }, '404': { description: not_found } } }
+    put:
+      operationId: updateSecret
+      x-freya-permission: secrets:write
+      parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: false, properties: { name: { $ref: '#/components/schemas/Name' }, username: { type: string, maxLength: 200 }, host_url: { type: string, maxLength: 2048 }, description: { type: string, maxLength: 2000 }, metadata: { type: object } } } } } }
+      responses: { '200': { description: 'updated (no new version)' } }
+  /api/warden/v1/secrets/{id}/remove:
+    post: { operationId: deleteSecret, x-freya-permission: secrets:delete, parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }], responses: { '204': { description: 'deleted; every version destroyed in the vault' } } }
+  /api/warden/v1/secrets/{id}/move:
+    post:
+      operationId: moveSecret
+      x-freya-permission: secrets:write
+      parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: false, properties: { folder_id: { type: [string, 'null'], format: uuid } } } } } }
+      responses: { '200': { description: 'moved (write on the secret and on the target folder)' }, '403': { description: 'forbidden: no write on the secret, or the target folder is readable but not writable' }, '404': { description: 'not_found: the secret, or the target folder is missing, of another tenant or not readable by the caller (never revealed); the secret stays where it was' } }
+  /api/warden/v1/secrets/{id}/password:
+    get: { operationId: revealPassword, x-freya-permission: secrets:read, description: 'material; audited with the version', parameters: [{ $ref: '#/components/parameters/id' }, { name: version, in: query, schema: { type: integer, minimum: 1 } }], responses: { '200': { description: 'password, version' }, '503': { description: vault_unavailable } } }
+    put:
+      operationId: updatePassword
+      x-freya-permission: secrets:write
+      parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: false, required: [password], properties: { password: { type: string, minLength: 1, maxLength: 4096 }, comment: { type: string, maxLength: 500 } } } } } }
+      responses: { '200': { description: 'new version' }, '503': { description: vault_unavailable } }
+  /api/warden/v1/secrets/{id}/versions:
+    get: { operationId: listVersions, x-freya-permission: secrets:read, parameters: [{ $ref: '#/components/parameters/id' }], responses: { '200': { description: 'Version[] newest first, no material' } } }
+  /api/warden/v1/secrets/{id}/versions/{version}/restore:
+    post: { operationId: restoreVersion, x-freya-permission: secrets:write, parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }, { name: version, in: path, required: true, schema: { type: integer, minimum: 1 } }], requestBody: { content: { application/json: { schema: { type: object, additionalProperties: false, properties: { comment: { type: string, maxLength: 500 } } } } } }, responses: { '200': { description: 'new current version with the restored password' } } }
+  /api/warden/v1/secrets/{id}/totp:
+    get: { operationId: totpCode, x-freya-permission: secrets:read, parameters: [{ $ref: '#/components/parameters/id' }], responses: { '200': { description: 'code, period, expires_in' }, '404': { description: 'no seed' } } }
+    put:
+      operationId: setTotp
+      x-freya-permission: secrets:write
+      parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: false, required: [totp], properties: { totp: { type: string, minLength: 16, maxLength: 512 } } } } } }
+      responses: { '204': { description: 'seed stored (material)' } }
+    delete: { operationId: removeTotp, x-freya-permission: secrets:write, parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }], responses: { '204': { description: removed } } }
+  # ---- permissions -----------------------------------------------------------
+  /api/warden/v1/grants:
+    get:
+      operationId: listGrants
+      x-freya-permission: permissions:manage
+      parameters: [{ name: resource_type, in: query, required: true, schema: { type: string, enum: [folder, secret] } }, { name: resource_id, in: query, required: true, schema: { type: string, format: uuid } }]
+      responses: { '200': { description: 'Grant[] on the resource and its ancestors (share on the resource required)' } }
+    post:
+      operationId: grantAccess
+      x-freya-permission: permissions:manage
+      parameters: [{ $ref: '#/components/parameters/csrf' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/GrantInput' } } } }
+      responses: { '201': { description: 'created or replaced' }, '403': { description: 'forbidden (no share, or relation above the granter)' } }
+  /api/warden/v1/grants/{id}/revoke:
+    post: { operationId: revokeAccess, x-freya-permission: permissions:manage, parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }], responses: { '204': { description: revoked } } }
+  /api/warden/v1/access/check:
+    get:
+      operationId: checkAccess
+      x-freya-permission: secrets:read
+      parameters: [{ name: resource_type, in: query, required: true, schema: { type: string, enum: [folder, secret] } }, { name: resource_id, in: query, required: true, schema: { type: string, format: uuid } }, { name: permission, in: query, required: true, schema: { type: string, enum: [read, write, delete, share] } }]
+      responses: { '200': { description: 'allowed, relation' } }
+  /api/warden/v1/access/effective:
+    get:
+      operationId: effectivePermissions
+      x-freya-permission: secrets:read
+      parameters: [{ name: resource_type, in: query, required: true, schema: { type: string, enum: [folder, secret] } }, { name: resource_id, in: query, required: true, schema: { type: string, format: uuid } }]
+      responses: { '200': { description: 'permissions and grants with sources' } }
+  /api/warden/v1/access/resources:
+    get:
+      operationId: accessibleResources
+      x-freya-permission: secrets:read
+      parameters: [{ name: permission, in: query, schema: { type: string, enum: [read, write, delete, share], default: read } }, { $ref: '#/components/parameters/cursor' }, { $ref: '#/components/parameters/limit' }]
+      responses: { '200': { description: 'items (resource_type, resource_id, name, path, relation, source), next' } }
+  # ---- transfer & backup -----------------------------------------------------
+  /api/warden/v1/transfer/bitwarden/validate:
+    post:
+      operationId: validateBitwarden
+      x-freya-timeout-seconds: 120
+      x-freya-permission: transfer:import
+      x-freya-max-body-bytes: 16777216
+      parameters: [{ $ref: '#/components/parameters/csrf' }, { name: folder_id, in: query, schema: { type: string, format: uuid } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, description: 'Bitwarden export (contracts/bitwarden.schema.json)' } } } }
+      responses: { '200': { description: 'TransferReport (nothing written)' }, '400': { description: validation_failed }, '413': { description: body_too_large } }
+  /api/warden/v1/transfer/bitwarden/import:
+    post:
+      operationId: importBitwarden
+      x-freya-timeout-seconds: 120
+      x-freya-permission: transfer:import
+      x-freya-max-body-bytes: 16777216
+      parameters: [{ $ref: '#/components/parameters/csrf' }, { name: folder_id, in: query, schema: { type: string, format: uuid } }, { name: duplicates, in: query, required: true, schema: { type: string, enum: [skip, rename, overwrite] } }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses: { '200': { description: TransferReport } }
+  /api/warden/v1/transfer/bitwarden/export:
+    post:
+      operationId: exportBitwarden
+      x-freya-timeout-seconds: 120
+      x-freya-permission: transfer:export
+      parameters: [{ $ref: '#/components/parameters/csrf' }, { name: folder_id, in: query, schema: { type: string, format: uuid } }]
+      responses: { '200': { description: 'Bitwarden document with passwords (bulk disclosure audited)' } }
+  /api/warden/v1/backup/export:
+    post:
+      operationId: exportBackup
+      x-freya-timeout-seconds: 120
+      x-freya-permission: backup:manage
+      parameters: [{ $ref: '#/components/parameters/csrf' }, { name: include_material, in: query, schema: { type: boolean, default: false } }]
+      responses: { '200': { description: 'backup document' } }
+  /api/warden/v1/backup/import:
+    post:
+      operationId: importBackup
+      x-freya-timeout-seconds: 120
+      x-freya-permission: backup:manage
+      x-freya-max-body-bytes: 16777216
+      parameters: [{ $ref: '#/components/parameters/csrf' }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object } } } }
+      responses: { '200': { description: 'results per entity (created, skipped, failed) and warnings' } }
+  # ---- shares ----------------------------------------------------------------
+  /api/warden/v1/secrets/{id}/shares:
+    get:
+      operationId: listShares
+      x-freya-permission: secrets:share
+      parameters: [{ $ref: '#/components/parameters/id' }, { $ref: '#/components/parameters/page' }, { $ref: '#/components/parameters/pageSize' }, { name: sort, in: query, schema: { type: string, enum: [created_at, expires_at] } }, { $ref: '#/components/parameters/order' }]
+      responses: { '200': { description: 'page of the shares created by the caller (default created_at desc)', content: { application/json: { schema: { $ref: '#/components/schemas/SharePage' } } } }, '422': { description: 'validation_failed {detail: {param}} for an invalid page, page_size, sort or order, or cursor/limit mixed with them', content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } } }
+    post:
+      operationId: createShare
+      x-freya-permission: secrets:share
+      parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/ShareInput' } } } }
+      responses: { '201': { description: 'created; the link is mailed, never returned' }, '403': { description: 'forbidden (no share)' } }
+  /api/warden/v1/shares/{id}/cancel:
+    post: { operationId: cancelShare, x-freya-permission: secrets:share, parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }], responses: { '204': { description: cancelled } } }
+  /warden/share:
+    get: { operationId: sharePage, x-freya-public: true, description: 'The token travels in the URL fragment (#<token>), never in the path or query, so no server, proxy or log sees it; the page reads it and posts it to /share/open on user action', responses: { '200': { description: 'HTML page (no-store) that opens the share on user action' } } }
+  /api/warden/v1/share/open:
+    post:
+      operationId: openShare
+      x-freya-public: true
+      x-freya-client-address: true
+      requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: false, required: [token], properties: { token: { type: string, pattern: '^[A-Za-z0-9_-]{43}$' } } } } } }
+      responses: { '200': { description: 'name, username, host_url, password (material; audited)' }, '404': { description: 'not_found (uniform)' } }
+  # ---- utilities -------------------------------------------------------------
+  /api/warden/v1/generate:
+    post:
+      operationId: generatePassword
+      x-freya-permission: secrets:read
+      parameters: [{ $ref: '#/components/parameters/csrf' }]
+      requestBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: false, properties: { length: { type: integer, minimum: 8, maximum: 128, default: 20 }, lower: { type: boolean, default: true }, upper: { type: boolean, default: true }, digits: { type: boolean, default: true }, symbols: { type: boolean, default: true } } } } } }
+      responses: { '200': { description: 'password (not audited, not logged)' } }
+  /api/warden/v1/stats:
+    get: { operationId: stats, x-freya-permission: stats:read, responses: { '200': { description: 'Stats for the caller tenant' } } }
+  /api/warden/v1/audit:
+    get:
+      operationId: auditTrail
+      x-freya-permission: stats:read
+      parameters: [{ name: event_type, in: query, schema: { type: string } }, { name: actor_id, in: query, schema: { type: string } }, { name: from, in: query, description: 'default: 7 days before to; the from..to span is at most 90 days (wider: 422 validation_failed {param: from})', schema: { type: string, format: date-time } }, { name: to, in: query, description: 'default: now; to - from must not exceed 90 days', schema: { type: string, format: date-time } }, { $ref: '#/components/parameters/page' }, { $ref: '#/components/parameters/pageSize' }, { name: sort, in: query, schema: { type: string, enum: [ts] } }, { $ref: '#/components/parameters/order' }, { $ref: '#/components/parameters/cursor' }]
+      description: 'events newest first within [from, to]; without from the window is the 7 days before to (default now), and the total counts that window exactly. With only cursor (legacy, one release): {items, next_cursor, total}.'
+      responses: { '200': { description: 'page of audit events (details never carry material; subject_name resolves secrets and folders that still exist)', content: { application/json: { schema: { $ref: '#/components/schemas/AuditPage' } } } }, '422': { description: 'validation_failed {detail: {param}} for an invalid page, page_size, sort or order, or cursor/limit mixed with them', content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } } }
+  /api/warden/v1/health:
+    get: { operationId: health, x-freya-permission: stats:read, responses: { '200': { description: 'database, vault (ok|sealed|unreachable|unauthenticated), version' } } }

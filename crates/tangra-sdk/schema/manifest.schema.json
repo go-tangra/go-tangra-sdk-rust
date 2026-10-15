@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://freya.example.org/schemas/gateway/manifest.json",
+  "title": "Gateway module manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["module", "display_name", "version", "prefixes", "routes", "methods", "permissions", "abilities", "remote", "nav"],
+  "properties": {
+    "module": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,39}$" },
+    "display_name": { "type": "string", "minLength": 1, "maxLength": 80 },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "prefixes": { "type": "array", "minItems": 1, "maxItems": 8, "uniqueItems": true, "items": { "type": "string", "pattern": "^/[A-Za-z0-9._~-]+(/[A-Za-z0-9._~-]+)*$", "maxLength": 128 } },
+    "routes": { "type": "array", "maxItems": 500, "items": { "$ref": "#/$defs/route" } },
+    "methods": { "type": "array", "maxItems": 500, "items": { "$ref": "#/$defs/method" } },
+    "permissions": { "type": "array", "maxItems": 500, "items": { "$ref": "#/$defs/permission" } },
+    "abilities": { "type": "array", "maxItems": 500, "items": { "$ref": "#/$defs/ability" } },
+    "remote": { "$ref": "#/$defs/remote" },
+    "nav": { "type": "array", "maxItems": 50, "items": { "$ref": "#/$defs/nav" } }
+  },
+  "$defs": {
+    "permissionRef": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_.-]{0,63}:[a-z0-9][a-z0-9_.-]{0,63}$" },
+    "route": {
+      "type": "object", "additionalProperties": false, "required": ["method", "path"],
+      "properties": {
+        "method": { "enum": ["GET", "POST", "PUT", "PATCH", "DELETE"] },
+        "path": { "type": "string", "pattern": "^/[A-Za-z0-9._~-]+(/([A-Za-z0-9._~-]+|\\{[a-z][a-z0-9_]*\\}))*(/\\{[a-z][a-z0-9_]*\\.\\.\\.\\})?$", "maxLength": 256 },
+        "permission": { "$ref": "#/$defs/permissionRef" },
+        "public": { "type": "boolean" },
+        "max_body_bytes": { "type": "integer", "minimum": 0, "maximum": 1073741824 },
+        "timeout": { "type": "string", "pattern": "^[0-9]+(ms|s|m)$" },
+        "client_address": { "type": "boolean" }
+      },
+      "oneOf": [ { "required": ["permission"], "properties": { "public": { "const": false } } }, { "required": ["public"], "properties": { "public": { "const": true } }, "not": { "required": ["permission"] } } ]
+    },
+    "method": {
+      "type": "object", "additionalProperties": false, "required": ["full_method"],
+      "properties": {
+        "full_method": { "type": "string", "pattern": "^/[A-Za-z_][A-Za-z0-9_.]*/[A-Za-z_][A-Za-z0-9_]*$", "maxLength": 256 },
+        "permission": { "$ref": "#/$defs/permissionRef" },
+        "public": { "type": "boolean" },
+        "streaming": { "type": "boolean" },
+        "max_stream_duration": { "type": "string", "pattern": "^[0-9]+(s|m|h)$" }
+      },
+      "oneOf": [ { "required": ["permission"], "properties": { "public": { "const": false } } }, { "required": ["public"], "properties": { "public": { "const": true } }, "not": { "required": ["permission"] } } ]
+    },
+    "permission": {
+      "type": "object", "additionalProperties": false, "required": ["resource", "action"],
+      "properties": { "resource": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_.-]{0,63}$" }, "action": { "type": "string", "pattern": "^[a-z0-9][a-z0-9_.-]{0,63}$" }, "description": { "type": "string", "maxLength": 256 } }
+    },
+    "ability": {
+      "type": "object", "additionalProperties": false, "required": ["action", "subject", "requires"],
+      "properties": {
+        "action": { "type": "array", "minItems": 1, "maxItems": 10, "items": { "type": "string", "pattern": "^[a-z][a-zA-Z0-9_-]{0,31}$" } },
+        "subject": { "type": "array", "minItems": 1, "maxItems": 10, "items": { "type": "string", "pattern": "^[A-Za-z][A-Za-z0-9_-]{0,63}$" } },
+        "fields": { "type": "array", "maxItems": 50, "items": { "type": "string", "maxLength": 64 } },
+        "conditions": { "type": "object", "description": "MongoDB-style CASL conditions; operators limited to $eq $ne $in $nin $lt $lte $gt $gte $exists; serialised size <= 4096 bytes" },
+        "inverted": { "type": "boolean" },
+        "reason": { "type": "string", "maxLength": 160 },
+        "requires": { "$ref": "#/$defs/permissionRef" }
+      }
+    },
+    "remote": {
+      "type": "object", "additionalProperties": false, "required": ["entry", "exposes"],
+      "properties": {
+        "entry": { "type": "string", "pattern": "^/m/[a-z][a-z0-9-]{1,39}/mf-manifest\\.json$" },
+        "exposes": { "type": "array", "minItems": 1, "items": { "enum": ["./routes", "./nav", "./boot", "./header"] } },
+        "integrity": { "type": "string", "pattern": "^sha(256|384|512)-[A-Za-z0-9+/=]+$" }
+      }
+    },
+    "nav": {
+      "type": "object", "additionalProperties": false, "required": ["title", "path", "order", "requires"],
+      "properties": { "title": { "type": "string", "minLength": 1, "maxLength": 40 }, "path": { "type": "string", "pattern": "^/[A-Za-z0-9._~/-]*$" }, "icon": { "type": "string", "maxLength": 64 }, "order": { "type": "integer", "minimum": 0, "maximum": 1000 }, "requires": { "$ref": "#/$defs/permissionRef" } }
+    }
+  }
+}

@@ -1,0 +1,461 @@
+openapi: 3.1.0
+info:
+  title: Deployer API
+  version: 0.1.0
+  description: >
+    Certificate deployment: distribute lcm-issued certificates to infrastructure
+    endpoints via pluggable providers, on demand and on certificate events.
+    Gateway-proxied under /api/deployer. Every route declares an
+    x-freya-permission (or x-freya-public); credentials are never returned.
+servers:
+  - url: /
+components:
+  parameters:
+    csrf:
+      name: X-CSRF-Token
+      in: header
+      required: true
+      schema: { type: string, maxLength: 128 }
+    id:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, maxLength: 64 }
+    jobId:
+      name: job_id
+      in: path
+      required: true
+      schema: { type: string, maxLength: 64 }
+    # List contract (go-tangra specs/032-server-side-tables, contracts/http-list.md).
+    page:
+      name: page
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, maximum: 2147483647 }
+    pageSize:
+      name: page_size
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, maximum: 200 }
+    order:
+      name: order
+      in: query
+      required: false
+      description: 'sort direction; defaults to the chosen field''s default direction'
+      schema: { type: string, enum: [asc, desc] }
+  schemas:
+    Error:
+      type: object
+      properties:
+        reason: { type: string }
+        detail: { type: object }
+    Uuid:
+      type: string
+      pattern: '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$'
+    Configuration:
+      type: object
+      required: [id, name, description, provider_type, config, has_credentials, status, status_message, created_at, updated_at]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        description: { type: string }
+        provider_type: { type: string }
+        config: { type: object, additionalProperties: true }
+        has_credentials: { type: boolean }
+        target_supplied:
+          type: array
+          items: { type: string }
+          description: 'Required configuration keys left empty for the deployment targets to supply (feature 033, D25); [] when complete.'
+        credentials_set:
+          type: array
+          items: { type: string }
+          description: 'Names of the stored credential fields (single reads by callers allowed to manage the configuration only).'
+        credentials_public:
+          type: object
+          additionalProperties: true
+          description: 'Values of non-secret credential fields (host, username, access key id); managers only, single reads. Secrets are never returned.'
+        ignored_config_keys:
+          type: array
+          items: { type: string }
+          description: 'Stored settings no longer honoured (endpoint, api_base): ignored at deploy time and refused on save. Names only.'
+        status: { type: string }
+        status_message: { type: string }
+        last_deployment_at: { type: string, format: date-time }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+    ConfigurationPage:
+      type: object
+      required: [items, total, page, page_size, sort, order]
+      properties:
+        items: { type: array, items: { $ref: '#/components/schemas/Configuration' } }
+        total: { type: integer }
+        page: { type: integer, description: 'the page returned (a page beyond the end answers the last page)' }
+        page_size: { type: integer }
+        sort: { type: string, enum: [name, provider_type, status, created_at] }
+        order: { type: string, enum: [asc, desc] }
+    CertificateFilter:
+      type: object
+      additionalProperties: false
+      description: 'All set fields must match (AND). Patterns are regular expressions (anchored) or a leading-wildcard glob like *.example.com; unknown fields are refused (400 malformed_body).'
+      properties:
+        issuer_name: { type: string, description: 'issuer name (exact)' }
+        common_name_pattern: { type: string, description: 'certificate common name pattern' }
+        san_pattern: { type: string, description: 'pattern matched against each SAN' }
+        subject_organization: { type: string, description: 'subject O (exact)' }
+        subject_org_unit: { type: string, description: 'subject OU (exact)' }
+        subject_country: { type: string, description: 'subject C (exact)' }
+    Target:
+      type: object
+      required: [id, name, description, auto_deploy, certificate_filters, configuration_ids]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        description: { type: string }
+        auto_deploy: { type: boolean }
+        certificate_filters: { type: array, items: { $ref: '#/components/schemas/CertificateFilter' } }
+        configuration_ids: { type: array, items: { type: string } }
+        config_overrides:
+          type: object
+          description: 'Per attached configuration (id -> override); overridable provider config only, never credentials.'
+          additionalProperties: { type: object, additionalProperties: true }
+        missing_required:
+          type: object
+          description: 'Single reads: per attached configuration, labels of required fields the merged configuration lacks (normally empty).'
+          additionalProperties: { type: array, items: { type: string } }
+        created_at: { type: string, format: date-time }
+    FieldOption:
+      type: object
+      required: [value, label]
+      properties:
+        value: { type: string }
+        label: { type: string }
+    ProviderField:
+      type: object
+      description: 'Field descriptor (contracts/deployer-config-ui.md §2); optional keys are omitted when unset.'
+      required: [key, label, secret, required]
+      properties:
+        key: { type: string, pattern: '^[a-z][a-z0-9_]{0,63}$' }
+        label: { type: string }
+        type: { type: string, enum: [string, text, url, int, bool, enum, string_list, key_value, host_selector], description: 'absent = string' }
+        secret: { type: boolean }
+        required: { type: boolean }
+        overridable: { type: boolean, description: 'may be supplied or changed by a deployment target override' }
+        default: { description: 'pre-filled on create; type matches type' }
+        options: { type: array, items: { $ref: '#/components/schemas/FieldOption' } }
+        help: { type: string, maxLength: 300 }
+        placeholder: { type: string }
+        group: { type: string, enum: [connection, credentials, options] }
+        min: { type: integer }
+        max: { type: integer }
+        max_length: { type: integer, description: 'string/text/url and each list item; default 1024' }
+        pattern: { type: string, description: 'anchored RE2 for string and each string_list item' }
+        max_items: { type: integer }
+    ProviderCapabilities:
+      type: object
+      required: [type, display_name, supports_verify, supports_rollback, delivers_by_reference, config_fields, credential_fields]
+      properties:
+        type: { type: string }
+        display_name: { type: string }
+        description: { type: string }
+        supports_verify: { type: boolean }
+        supports_rollback: { type: boolean }
+        delivers_by_reference: { type: boolean, description: 'the provider never receives the private key (inventory-agent)' }
+        test_connection: { type: boolean, description: 'validate contacts the endpoint ("Test connection"); absent = input checks only' }
+        schema_version: { type: integer }
+        config_fields: { type: array, items: { $ref: '#/components/schemas/ProviderField' } }
+        credential_fields: { type: array, items: { $ref: '#/components/schemas/ProviderField' } }
+        one_of_required:
+          type: array
+          description: 'groups of config keys of which at least one must be non-empty'
+          items: { type: array, items: { type: string } }
+    ProviderCatalogue:
+      type: object
+      required: [items]
+      properties:
+        items: { type: array, items: { $ref: '#/components/schemas/ProviderCapabilities' } }
+    ConfigurationInput:
+      type: object
+      description: 'Unknown top-level fields are refused by the handler (400 malformed_body).'
+      properties:
+        name: { type: string, minLength: 1, maxLength: 100 }
+        description: { type: string }
+        provider_type: { type: string, description: 'create only; an update with another provider is refused (422 provider_type)' }
+        config: { type: object, additionalProperties: true }
+        credentials: { type: object, additionalProperties: true, description: 'update: empty values keep the stored value; a value replaces only that field' }
+        clear_credentials: { type: array, items: { type: string }, description: 'update: optional credential fields to remove' }
+    ValidateRequest:
+      type: object
+      description: 'Unknown top-level fields are refused by the handler (400 malformed_body).'
+      properties:
+        provider_type: { type: string }
+        configuration_id: { type: string, description: 'merge this configuration''s stored credentials (blank secrets on edit)' }
+        config: { type: object, additionalProperties: true }
+        credentials: { type: object, additionalProperties: true }
+    ValidateResult:
+      type: object
+      required: [valid, checked, deferred]
+      properties:
+        valid: { type: boolean }
+        checked: { type: string, enum: [probe, static, partial] }
+        deferred: { type: array, items: { type: string }, description: 'target-supplied keys the probe could not use' }
+        details: { type: object, additionalProperties: true, description: 'Previewer providers, e.g. inventory-agent matched_hosts' }
+    AttachRequest:
+      type: object
+      description: 'Unknown top-level fields are refused by the handler (400 malformed_body).'
+      properties:
+        configuration_ids: { type: array, items: { type: string } }
+        config_overrides:
+          type: object
+          additionalProperties: { type: object, additionalProperties: true }
+        overrides:
+          type: object
+          description: 'alias of config_overrides (contracts/deployer-config-ui.md §4a)'
+          additionalProperties: { type: object, additionalProperties: true }
+    FieldErrors:
+      type: object
+      description: '422 validation_failed: detail.fields maps config.<key> | credentials.<key> | config_overrides.<key> to a code; values are never echoed.'
+      properties:
+        reason: { type: string, enum: [validation_failed] }
+        detail:
+          type: object
+          properties:
+            fields: { type: object, additionalProperties: { type: string } }
+            field: { type: string, description: 'first entry of fields (older clients)' }
+            message: { type: string }
+            configuration_id: { type: string, description: 'attach: the configuration the override errors concern' }
+            targets:
+              type: array
+              description: 'required_by_targets: targets that would become incomplete (<= 20)'
+              items:
+                type: object
+                properties: { id: { type: string }, name: { type: string } }
+    TargetPage:
+      type: object
+      required: [items, total, page, page_size, sort, order]
+      properties:
+        items: { type: array, items: { $ref: '#/components/schemas/Target' } }
+        total: { type: integer }
+        page: { type: integer, description: 'the page returned (a page beyond the end answers the last page)' }
+        page_size: { type: integer }
+        sort: { type: string, enum: [name, created_at] }
+        order: { type: string, enum: [asc, desc] }
+    Job:
+      type: object
+      required: [id, type, certificate_id, status, progress, retry_count, max_retries, triggered_by, created_at]
+      properties:
+        id: { type: string }
+        type: { type: string, enum: [parent, child, direct] }
+        deployment_target_id: { type: string }
+        target_configuration_id: { type: string }
+        parent_job_id: { type: string }
+        certificate_id: { type: string }
+        certificate_serial: { type: string }
+        status: { type: string }
+        status_message: { type: string }
+        error: { type: string, description: 'cause of the last failure (provider or lcm error, credentials redacted); cleared by a success' }
+        progress: { type: integer }
+        retry_count: { type: integer }
+        max_retries: { type: integer }
+        triggered_by: { type: string }
+        created_at: { type: string, format: date-time }
+        completed_at: { type: string, format: date-time }
+    JobPage:
+      type: object
+      required: [items, total, page, page_size, sort, order]
+      properties:
+        items: { type: array, items: { $ref: '#/components/schemas/Job' } }
+        total: { type: integer }
+        page: { type: integer, description: 'the page returned (a page beyond the end answers the last page)' }
+        page_size: { type: integer }
+        sort: { type: string, enum: [created_at, status, job_type, completed_at] }
+        order: { type: string, enum: [asc, desc] }
+    ChildJobPage:
+      type: object
+      required: [items, total, page, page_size, sort, order]
+      properties:
+        items: { type: array, items: { $ref: '#/components/schemas/Job' } }
+        total: { type: integer }
+        page: { type: integer }
+        page_size: { type: integer }
+        sort: { type: string, enum: [created_at] }
+        order: { type: string, enum: [asc, desc] }
+    HistoryEntry:
+      type: object
+      required: [action, result, duration_ms, created_at]
+      properties:
+        id: { type: string }
+        action: { type: string }
+        result: { type: string }
+        message: { type: string }
+        duration_ms: { type: integer }
+        created_at: { type: string, format: date-time }
+    HistoryPage:
+      type: object
+      required: [items, total, page, page_size, sort, order]
+      properties:
+        items: { type: array, items: { $ref: '#/components/schemas/HistoryEntry' } }
+        total: { type: integer }
+        page: { type: integer }
+        page_size: { type: integer }
+        sort: { type: string, enum: [created_at] }
+        order: { type: string, enum: [asc, desc] }
+paths:
+  /api/deployer/v1/providers:
+    get:
+      operationId: listProviders
+      x-freya-permission: 'configurations:read'
+      responses:
+        '200': { description: 'provider catalogue with field descriptors', content: { application/json: { schema: { $ref: '#/components/schemas/ProviderCatalogue' } } } }
+
+  /api/deployer/v1/configurations:
+    get:
+      operationId: listConfigurations
+      x-freya-permission: 'configurations:read'
+      parameters:
+        - { $ref: '#/components/parameters/page' }
+        - { $ref: '#/components/parameters/pageSize' }
+        - { name: sort, in: query, description: 'default name (asc)', schema: { type: string, enum: [name, provider_type, status, created_at] } }
+        - { $ref: '#/components/parameters/order' }
+        - { name: provider_type, in: query, schema: { type: string, maxLength: 64 } }
+        - { name: status, in: query, schema: { type: string, maxLength: 32 } }
+      responses:
+        '200': { description: 'page of configurations', content: { application/json: { schema: { $ref: '#/components/schemas/ConfigurationPage' } } } }
+        '422': { description: 'invalid list parameter (detail.param)', content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    post:
+      operationId: createConfiguration
+      x-freya-permission: 'configurations:manage'
+      parameters: [{ $ref: '#/components/parameters/csrf' }]
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/ConfigurationInput' } } } }
+      responses:
+        '201': { description: created, content: { application/json: { schema: { $ref: '#/components/schemas/Configuration' } } } }
+        '422': { description: 'validation_failed (detail.fields)', content: { application/json: { schema: { $ref: '#/components/schemas/FieldErrors' } } } }
+  /api/deployer/v1/configurations/validate:
+    post:
+      operationId: validateCredentials
+      x-freya-permission: 'configurations:manage'
+      x-freya-timeout-seconds: 30
+      parameters: [{ $ref: '#/components/parameters/csrf' }]
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/ValidateRequest' } } } }
+      responses:
+        '200': { description: 'validation result', content: { application/json: { schema: { $ref: '#/components/schemas/ValidateResult' } } } }
+        '404': { description: 'configuration_id unknown in the tenant' }
+        '422': { description: 'validation_failed (detail.fields) or credentials_rejected (provider refused; no detail)', content: { application/json: { schema: { $ref: '#/components/schemas/FieldErrors' } } } }
+  /api/deployer/v1/configurations/{id}:
+    get: { operationId: getConfiguration, x-freya-permission: 'configurations:read', parameters: [{ $ref: '#/components/parameters/id' }], responses: { '200': { description: configuration, content: { application/json: { schema: { $ref: '#/components/schemas/Configuration' } } } }, '404': { description: not_found } } }
+    put:
+      operationId: updateConfiguration
+      x-freya-permission: 'configurations:manage'
+      parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }]
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/ConfigurationInput' } } } }
+      responses:
+        '200': { description: updated, content: { application/json: { schema: { $ref: '#/components/schemas/Configuration' } } } }
+        '422': { description: 'validation_failed (detail.fields; detail.targets for required_by_targets)', content: { application/json: { schema: { $ref: '#/components/schemas/FieldErrors' } } } }
+  /api/deployer/v1/configurations/{id}/remove:
+    post: { operationId: deleteConfiguration, x-freya-permission: 'configurations:manage', parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }], responses: { '204': { description: deleted } } }
+
+  /api/deployer/v1/targets:
+    get:
+      operationId: listTargets
+      x-freya-permission: 'targets:read'
+      parameters:
+        - { $ref: '#/components/parameters/page' }
+        - { $ref: '#/components/parameters/pageSize' }
+        - { name: sort, in: query, description: 'default name (asc)', schema: { type: string, enum: [name, created_at] } }
+        - { $ref: '#/components/parameters/order' }
+      responses:
+        '200': { description: 'page of targets', content: { application/json: { schema: { $ref: '#/components/schemas/TargetPage' } } } }
+        '422': { description: 'invalid list parameter (detail.param)', content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    post: { operationId: createTarget, x-freya-permission: 'targets:manage', parameters: [{ $ref: '#/components/parameters/csrf' }], responses: { '201': { description: created } } }
+  /api/deployer/v1/targets/{id}:
+    get: { operationId: getTarget, x-freya-permission: 'targets:read', parameters: [{ $ref: '#/components/parameters/id' }], responses: { '200': { description: target, content: { application/json: { schema: { $ref: '#/components/schemas/Target' } } } }, '404': { description: not_found } } }
+    put: { operationId: updateTarget, x-freya-permission: 'targets:manage', parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }], responses: { '200': { description: updated } } }
+  /api/deployer/v1/targets/{id}/remove:
+    post: { operationId: deleteTarget, x-freya-permission: 'targets:manage', parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }], responses: { '204': { description: deleted } } }
+  /api/deployer/v1/targets/{id}/configurations:
+    get: { operationId: listTargetConfigurations, x-freya-permission: 'targets:read', parameters: [{ $ref: '#/components/parameters/id' }], responses: { '200': { description: list } } }
+    post:
+      operationId: attachConfigurations
+      x-freya-permission: 'targets:manage'
+      parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }]
+      requestBody: { content: { application/json: { schema: { $ref: '#/components/schemas/AttachRequest' } } } }
+      responses:
+        '200': { description: attached }
+        '422': { description: 'validation_failed (detail.fields config_overrides.<key>, detail.configuration_id); nothing saved', content: { application/json: { schema: { $ref: '#/components/schemas/FieldErrors' } } } }
+  /api/deployer/v1/targets/{id}/configurations/remove:
+    post: { operationId: detachConfigurations, x-freya-permission: 'targets:manage', parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }], responses: { '200': { description: detached } } }
+
+  /api/deployer/v1/deploy:
+    post: { operationId: deploy, x-freya-permission: 'deploy:execute', x-freya-timeout-seconds: 30, parameters: [{ $ref: '#/components/parameters/csrf' }], responses: { '202': { description: 'accepted; outcome over SSE' } } }
+  /api/deployer/v1/deploy/target:
+    post: { operationId: deployToTarget, x-freya-permission: 'deploy:execute', x-freya-timeout-seconds: 30, parameters: [{ $ref: '#/components/parameters/csrf' }], responses: { '202': { description: accepted } } }
+  /api/deployer/v1/deploy/configurations:
+    post: { operationId: deployToConfigurations, x-freya-permission: 'deploy:execute', x-freya-timeout-seconds: 30, parameters: [{ $ref: '#/components/parameters/csrf' }], responses: { '202': { description: accepted } } }
+  /api/deployer/v1/deploy/{job_id}/verify:
+    post: { operationId: verifyDeployment, x-freya-permission: 'deploy:execute', x-freya-timeout-seconds: 60, parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/jobId' }], responses: { '200': { description: 'verify result' } } }
+  /api/deployer/v1/deploy/{job_id}/rollback:
+    post: { operationId: rollbackDeployment, x-freya-permission: 'deploy:execute', x-freya-timeout-seconds: 60, parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/jobId' }], responses: { '200': { description: 'rollback result' } } }
+
+  /api/deployer/v1/jobs:
+    get:
+      operationId: listJobs
+      x-freya-permission: 'jobs:read'
+      parameters:
+        - { $ref: '#/components/parameters/page' }
+        - { $ref: '#/components/parameters/pageSize' }
+        - { name: sort, in: query, description: 'default created_at (desc)', schema: { type: string, enum: [created_at, status, job_type, completed_at] } }
+        - { $ref: '#/components/parameters/order' }
+        - { name: status, in: query, schema: { type: string, maxLength: 32 } }
+        - { name: triggered_by, in: query, schema: { type: string, maxLength: 32 } }
+        - { name: certificate_id, in: query, schema: { type: string, maxLength: 64 } }
+        - { name: job_type, in: query, schema: { type: string, enum: [parent, child, direct] } }
+        - { name: parent_job_id, in: query, schema: { $ref: '#/components/schemas/Uuid' } }
+        - { name: target_id, in: query, schema: { $ref: '#/components/schemas/Uuid' } }
+      responses:
+        '200': { description: 'page of jobs (newest first by default)', content: { application/json: { schema: { $ref: '#/components/schemas/JobPage' } } } }
+        '422': { description: 'invalid list parameter (detail.param)', content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /api/deployer/v1/jobs/{id}:
+    get: { operationId: getJob, x-freya-permission: 'jobs:read', parameters: [{ $ref: '#/components/parameters/id' }], responses: { '200': { description: job }, '404': { description: not_found } } }
+  /api/deployer/v1/jobs/{id}/children:
+    get:
+      operationId: listJobChildren
+      x-freya-permission: 'jobs:read'
+      parameters:
+        - { $ref: '#/components/parameters/id' }
+        - { $ref: '#/components/parameters/page' }
+        - { $ref: '#/components/parameters/pageSize' }
+        - { name: sort, in: query, description: 'default created_at (desc)', schema: { type: string, enum: [created_at] } }
+        - { $ref: '#/components/parameters/order' }
+      responses:
+        '200': { description: 'page of a parent job''s child jobs', content: { application/json: { schema: { $ref: '#/components/schemas/ChildJobPage' } } } }
+        '404': { description: not_found }
+        '422': { description: 'invalid list parameter (detail.param)', content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /api/deployer/v1/jobs/{id}/history:
+    get:
+      operationId: listJobHistory
+      x-freya-permission: 'jobs:read'
+      parameters:
+        - { $ref: '#/components/parameters/id' }
+        - { $ref: '#/components/parameters/page' }
+        - { $ref: '#/components/parameters/pageSize' }
+        - { name: sort, in: query, description: 'default created_at (desc)', schema: { type: string, enum: [created_at] } }
+        - { $ref: '#/components/parameters/order' }
+      responses:
+        '200': { description: 'page of a job''s deployment history', content: { application/json: { schema: { $ref: '#/components/schemas/HistoryPage' } } } }
+        '404': { description: not_found }
+        '422': { description: 'invalid list parameter (detail.param)', content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /api/deployer/v1/jobs/{id}/result:
+    get: { operationId: getJobResult, x-freya-permission: 'jobs:read', parameters: [{ $ref: '#/components/parameters/id' }], responses: { '200': { description: 'result + history' } } }
+  /api/deployer/v1/jobs/{id}/cancel:
+    post: { operationId: cancelJob, x-freya-permission: 'jobs:manage', parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }], responses: { '200': { description: cancelled } } }
+  /api/deployer/v1/jobs/{id}/retry:
+    post: { operationId: retryJob, x-freya-permission: 'jobs:manage', parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }], responses: { '200': { description: retried } } }
+
+  /api/deployer/v1/statistics:
+    get: { operationId: getStatistics, x-freya-permission: 'stats:read', responses: { '200': { description: statistics } } }
+  /api/deployer/v1/statistics/tenant:
+    get: { operationId: getTenantStatistics, x-freya-permission: 'stats:read', responses: { '200': { description: 'tenant statistics' } } }
+
+  /api/deployer/v1/backup/export:
+    post: { operationId: exportBackup, x-freya-permission: 'backup:manage', parameters: [{ $ref: '#/components/parameters/csrf' }], responses: { '200': { description: export } } }
+  /api/deployer/v1/backup/import:
+    post: { operationId: importBackup, x-freya-permission: 'backup:manage', parameters: [{ $ref: '#/components/parameters/csrf' }], responses: { '200': { description: imported } } }
