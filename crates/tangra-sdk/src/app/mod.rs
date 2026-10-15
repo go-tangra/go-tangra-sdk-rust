@@ -22,11 +22,13 @@
 
 pub(crate) mod chain;
 mod client;
+mod conn;
 pub mod endpoint;
 pub(crate) mod serve;
 
 pub use chain::PeerIdentity;
 pub use client::{ClientError, PeerChannel};
+pub use conn::{GrpcChannel, ServiceConn};
 pub use serve::ConnInfo;
 
 use std::future::Future;

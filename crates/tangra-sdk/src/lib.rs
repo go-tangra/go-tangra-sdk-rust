@@ -11,9 +11,11 @@
 pub mod admin;
 pub mod app;
 pub mod audit;
+pub mod auth;
 pub mod config;
 pub mod correlation;
 pub mod error;
+pub mod gateway;
 pub mod identity;
 pub mod listquery;
 pub mod log;

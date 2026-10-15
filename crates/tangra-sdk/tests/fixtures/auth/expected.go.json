@@ -1,0 +1,432 @@
+[
+  {
+    "name": "valid",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "alg_hs256",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token signature is invalid: signing method HS256 is invalid"
+  },
+  {
+    "name": "alg_none",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token signature is invalid: signing method none is invalid"
+  },
+  {
+    "name": "alg_unknown",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is unverifiable: signing method (alg) is unavailable"
+  },
+  {
+    "name": "alg_missing",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is unverifiable: signing method (alg) is unspecified"
+  },
+  {
+    "name": "alg_number",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is unverifiable: signing method (alg) is unspecified"
+  },
+  {
+    "name": "alg_lower",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is unverifiable: signing method (alg) is unavailable"
+  },
+  {
+    "name": "kid_missing",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is unverifiable: error while executing keyfunc: kid required"
+  },
+  {
+    "name": "kid_empty",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is unverifiable: error while executing keyfunc: kid required"
+  },
+  {
+    "name": "kid_number",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is unverifiable: error while executing keyfunc: kid required"
+  },
+  {
+    "name": "kid_unknown",
+    "ok": false,
+    "unknown_kid": true,
+    "error": "token: unknown kid \"k9\""
+  },
+  {
+    "name": "header_null",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is unverifiable: signing method (alg) is unspecified"
+  },
+  {
+    "name": "header_array",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: could not JSON decode header: json: cannot unmarshal array into Go value of type map[string]interface {}"
+  },
+  {
+    "name": "header_dup_alg_last_wins",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "header_dup_alg_last_bad",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token signature is invalid: signing method HS256 is invalid"
+  },
+  {
+    "name": "header_trailing",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: could not JSON decode header: invalid character 'x' after top-level value"
+  },
+  {
+    "name": "wrong_key",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token signature is invalid: ed25519: verification error"
+  },
+  {
+    "name": "wrong_issuer",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token has invalid claims: token has invalid issuer"
+  },
+  {
+    "name": "issuer_missing",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token has invalid claims: token is missing required claim: iss claim is required"
+  },
+  {
+    "name": "issuer_empty",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token has invalid claims: token is missing required claim: iss claim is required"
+  },
+  {
+    "name": "expired_61s",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token has invalid claims: token is expired"
+  },
+  {
+    "name": "expired_60s_boundary",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token has invalid claims: token is expired"
+  },
+  {
+    "name": "expired_59s_in_skew",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "exp_missing",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token has invalid claims: token is missing required claim: exp claim is required"
+  },
+  {
+    "name": "exp_null",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token has invalid claims: token is missing required claim: exp claim is required"
+  },
+  {
+    "name": "exp_quoted",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "exp_quoted_junk",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: could not JSON decode claim: could not parse NumericData: json: invalid number literal, trying to unmarshal \"\\\"soon\\\"\" into Number"
+  },
+  {
+    "name": "exp_quoted_space",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: could not JSON decode claim: could not parse NumericData: json: invalid number literal, trying to unmarshal \"\\\" 1789560900\\\"\" into Number"
+  },
+  {
+    "name": "exp_bool",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: could not JSON decode claim: could not parse NumericData: json: cannot unmarshal bool into Go value of type json.Number"
+  },
+  {
+    "name": "exp_float",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "exp_exponent",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "exp_huge",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: could not JSON decode claim: could not convert json number value to float: strconv.ParseFloat: parsing \"1e400\": value out of range"
+  },
+  {
+    "name": "exp_then_null",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token has invalid claims: token is missing required claim: exp claim is required"
+  },
+  {
+    "name": "nbf_61s_future",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token has invalid claims: token is not valid yet"
+  },
+  {
+    "name": "nbf_60s_boundary",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "nbf_missing",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: lifetime exceeds the maximum"
+  },
+  {
+    "name": "iat_61s_future",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token has invalid claims: token used before issued"
+  },
+  {
+    "name": "iat_missing",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: lifetime exceeds the maximum"
+  },
+  {
+    "name": "lifetime_900",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "lifetime_901",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: lifetime exceeds the maximum"
+  },
+  {
+    "name": "lifetime_negative",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "sub_missing",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: required claims missing"
+  },
+  {
+    "name": "sub_number",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: could not JSON decode claim: json: cannot unmarshal number into Go struct field Claims.RegisteredClaims.sub of type string"
+  },
+  {
+    "name": "sub_null",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: required claims missing"
+  },
+  {
+    "name": "tid_empty",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: required claims missing"
+  },
+  {
+    "name": "sid_missing",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: required claims missing"
+  },
+  {
+    "name": "jti_missing",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: required claims missing"
+  },
+  {
+    "name": "roles_null",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "roles_null_elem",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "roles_number",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: could not JSON decode claim: json: cannot unmarshal number into Go struct field Claims.roles of type []string"
+  },
+  {
+    "name": "roles_number_elem",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: could not JSON decode claim: json: cannot unmarshal number into Go struct field Claims.roles of type string"
+  },
+  {
+    "name": "amr_object",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: could not JSON decode claim: json: cannot unmarshal object into Go struct field Claims.amr of type []string"
+  },
+  {
+    "name": "aud_string",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "aud_array",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "aud_null_elem",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: could not JSON decode claim: invalid type for claim"
+  },
+  {
+    "name": "aud_number",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: could not JSON decode claim: invalid type for claim"
+  },
+  {
+    "name": "unknown_claim_types_ignored",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "claims_array",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: could not JSON decode claim: json: cannot unmarshal array into Go value of type authclient.Claims"
+  },
+  {
+    "name": "claims_null",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token has invalid claims: token is missing required claim: exp claim is required, token is missing required claim: iss claim is required"
+  },
+  {
+    "name": "claims_trailing",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: could not JSON decode claim: invalid character 'x' after top-level value"
+  },
+  {
+    "name": "key_case_upper",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "key_long_s",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "key_dup_last_wins",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "key_case_dup_empty_last",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: required claims missing"
+  },
+  {
+    "name": "unicode_claim",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "oversized",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: too long"
+  },
+  {
+    "name": "four_segments",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: token contains an invalid number of segments"
+  },
+  {
+    "name": "two_segments",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: token contains an invalid number of segments"
+  },
+  {
+    "name": "sig_garbage",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: could not base64 decode signature: illegal base64 data at input byte 0"
+  },
+  {
+    "name": "sig_padded",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: could not base64 decode signature: illegal base64 data at input byte 86"
+  },
+  {
+    "name": "sig_newline",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "header_padded",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: could not base64 decode header: illegal base64 data at input byte 51"
+  },
+  {
+    "name": "claims_crlf",
+    "ok": true,
+    "unknown_kid": false
+  },
+  {
+    "name": "sig_truncated",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token signature is invalid: ed25519: verification error"
+  },
+  {
+    "name": "empty",
+    "ok": false,
+    "unknown_kid": false,
+    "error": "token: token is malformed: token contains an invalid number of segments"
+  }
+]
