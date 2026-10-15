@@ -1,0 +1,163 @@
+# go-tangra-sdk-rust CI: the SDK crates and the example module (examples/notes).
+#
+# The SDK repository releases no module image: the notes image is built (not
+# pushed) to keep its Dockerfile honest. A module repository's pipeline
+# (image tags, catalogue entry) is templates/module/.github/workflows/release.yaml.
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: '0'
+
+jobs:
+  ui:
+    name: Example UI lint + build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    defaults:
+      run:
+        working-directory: examples/notes/ui
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@go-tangra'
+          cache: npm
+          cache-dependency-path: examples/notes/ui/package-lock.json
+
+      - name: npm ci
+        run: npm ci --no-audit --no-fund
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: notes-ui-dist
+          path: examples/notes/ui/dist
+          retention-days: 1
+
+  rust:
+    name: Rust fmt + clippy + test
+    runs-on: ubuntu-latest
+    needs:
+      - ui
+    # The example's end-to-end test publishes to this Valkey
+    # (TANGRA_TEST_VALKEY_ADDR); the SDK's event-bus tests start their own
+    # TLS server from VALKEY_SERVER.
+    services:
+      valkey:
+        image: valkey/valkey:8.1
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "valkey-cli ping"
+          --health-interval 2s
+          --health-timeout 2s
+          --health-retries 30
+    env:
+      TANGRA_TEST_VALKEY_ADDR: 127.0.0.1:6379
+      VALKEY_SERVER: /usr/bin/redis-server
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: Server binary for the SDK event-bus tests (TLS)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends redis-server
+          sudo systemctl stop redis-server || true
+
+      # The built remote, so the example serves and tests its UI.
+      - uses: actions/download-artifact@v4
+        with:
+          name: notes-ui-dist
+          path: examples/notes/ui/dist
+
+      - name: cargo fmt
+        run: cargo fmt --all --check
+
+      - name: cargo clippy (default features)
+        run: cargo clippy --workspace --all-targets --locked -- -D warnings
+
+      - name: cargo clippy (all features)
+        run: cargo clippy --workspace --all-targets --all-features --locked -- -D warnings
+
+      - name: cargo test (all features)
+        run: cargo test --workspace --all-features --locked
+
+  docs:
+    name: Example help pages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      # Help pages (docs/help): front-matter, slugs, links, images, limits.
+      - name: Lint help pages
+        uses: go-tangra/go-tangra/.github/actions/docs-lint@v4.10.0
+        with:
+          dir: examples/notes/docs/help
+          tool-version: v4.10.0
+
+  docker:
+    name: Example image (build only)
+    runs-on: ubuntu-latest
+    needs:
+      - rust
+      - docs
+    permissions:
+      contents: read
+      packages: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./examples/notes/Dockerfile
+          push: false
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          secrets: |
+            npm_token=${{ secrets.GITHUB_TOKEN }}
+          build-args: |
+            APP_VERSION=sha-${{ github.sha }}
+            VCS_REF=${{ github.sha }}

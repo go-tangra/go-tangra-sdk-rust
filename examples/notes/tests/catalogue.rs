@@ -30,7 +30,7 @@ fn join_values() -> BTreeMap<&'static str, String> {
         ("GATEWAY_GRPC", "portal.example.org:9643".into()),
         ("AUTH_GRPC", "portal.example.org:9543".into()),
         ("MESH_TENANT_ID", "00000000-0000-0000-0000-000000000001".into()),
-        ("MODULE_IMAGE", "ghcr.io/go-tangra/tangra-notes".into()),
+        ("MODULE_IMAGE", "ghcr.io/go-tangra/go-tangra-notes".into()),
         ("MODULE_VERSION", "1.0.0".into()),
         ("MODULE_ADVERTISE_HOST", "notes.example.org".into()),
         ("MODULE_BIND_IP", "10.0.0.5".into()),

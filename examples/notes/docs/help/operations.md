@@ -6,7 +6,7 @@ order: 90
 tags: [notes, operations, configuration, troubleshooting]
 audience: operator
 ---
-The module runs as `tangra-notes` (image `ghcr.io/go-tangra/tangra-notes`).
+The module runs as `tangra-notes` (image `ghcr.io/go-tangra/go-tangra-notes`).
 
 ```sh
 tangra-notes -config /app/config.yaml                 # serve

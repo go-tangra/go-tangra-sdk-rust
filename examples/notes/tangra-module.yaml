@@ -7,7 +7,7 @@ module: notes
 display_name: Notes
 category: Collaboration
 summary: Short tenant-wide notes; the go-tangra Rust SDK's example module.
-image: ghcr.io/go-tangra/tangra-notes
+image: ghcr.io/go-tangra/go-tangra-notes
 routes:
   prefixes: [/api/notes, /m/notes, /notes]
   names: [notes]

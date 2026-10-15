@@ -23,19 +23,47 @@ Crates:
   module features: help docs (`helpdocs`), the UI remote (`ui`, feature `ui`), the Valkey
   event bus (`events`, feature `events`) and the catalogue descriptor
   (`catalogue`).
+- `tangra-notes` (`examples/notes`) - an example module using all of the
+  above, structured like the Go reference module (go-tangra-deployer): API,
+  manifest from OpenAPI, auth and gateway registration, help pages, a Vue
+  remote, events, catalogue descriptor, install bundle, Dockerfile. See
+  [Writing a go-tangra module in Rust](docs/writing-a-module.md).
 
-Status: work in progress (phases 1-4: foundation, identity, transport,
-runtime, gateway/auth platform integration, help docs, UI, events,
-catalogue).
+`tangra_sdk::testutil` holds test helpers for module authors: an in-test
+SPIFFE CA, an in-memory identity, and `testutil::platform`, fake `gateway`
+and `auth` services served over mTLS.
+
+Status: phases 1-5 are done (foundation, identity, transport, runtime,
+gateway/auth integration, help docs, UI, events, catalogue, the example
+module). Nothing is published: there is no crates.io release and no
+released module image. The behaviour is cross-checked against the Go
+sources on the fixtures below; it has not run against a live core.
+
+## Quick start
 
 ```rust,ignore
-let verifier = app.user_auth(auth::Config { issuer: cfg.gateway.issuer.clone(), ..Default::default() })?;
-app.auth_registration(registration())?;           // 5s retry, then every 5 min
-app.gateway_registration(manifest())?;            // after ready; deregisters on shutdown
+let cfg = Config::<MyConfig>::load("config.yaml")?;   // framework keys + module sections
+let app = App::builder(cfg.framework).build().await?;  // mTLS listeners, policy, admin
+let verifier = app.user_auth(auth::Config { issuer: cfg.module.gateway.issuer.clone(), ..Default::default() })?;
+app.auth_registration(registration())?;               // 5s retry, then every 5 min
+app.gateway_registration(manifest())?;                // after ready; deregisters on shutdown
 let api = Router::new().route("/api/orders/v1/me", get(|u: auth::User| async move { u.user_id }))
     .layer(auth::UserAuthLayer::new(verifier));
 app.run(Services::new().http(api)).await?;
 ```
+
+The example module, end to end:
+
+```sh
+cargo test -p tangra-notes                      # unit, manifest, docs, catalogue, e2e
+(cd examples/notes/ui && NODE_AUTH_TOKEN=... npm ci && npm run build)
+cargo build -p tangra-notes --features ui       # embeds ui/dist
+cargo run -p tangra-notes -- -config <config.yaml>
+```
+
+`examples/notes/tests/module.rs` runs the module against the fake platform;
+its event checks need a Valkey (`TANGRA_TEST_VALKEY_ADDR=host:port`, or a
+`valkey-server`/`redis-server` binary via `VALKEY_SERVER` or `PATH`).
 
 The manifest validator and the token verifier are cross-checked against the
 Go originals (portal `internal/manifest`, authclient `VerifyToken`, deployer
@@ -47,6 +75,11 @@ cargo fmt --check
 cargo clippy --all-targets --all-features -- -D warnings
 cargo test --all-features
 ```
+
+CI (`.github/workflows/ci.yaml`) runs these, lints the example's help pages
+with the go-tangra `docs-lint` action, builds the example UI and image (not
+pushed). A module repository's pipeline, with GHCR tags and the catalogue
+entry, is `templates/module/.github/workflows/release.yaml`.
 
 ## Deviations from the Go framework
 
@@ -108,6 +141,10 @@ gatewayclient) follow Go unless listed here.
   cross-checked.
 - **Log attributes** holding lists (`sample`, `roles` in the registration
   logs) are rendered as one string; slog writes a JSON array.
+- **OpenAPI request validation**: routes are derived from the OpenAPI
+  document, but requests are not validated against it (the deployer runs
+  kin-openapi's `ValidateRequest`); handlers check parameters and bodies
+  themselves (see `examples/notes/src/api.rs`).
 - **OpenAPI routes**: an operation that is both `x-freya-public` and carries
   `x-freya-permission` is refused (warden's rule); the deployer's builder
   lets `public` win.
