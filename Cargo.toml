@@ -49,9 +49,9 @@ serde_norway = "0.9"
 serde_ignored = "0.1"
 
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["registry", "std"] }
+tracing-subscriber = { version = "0.3", features = ["registry", "std", "fmt"] }
 chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
-regex = "1"
+form_urlencoded = "1"
 uuid = { version = "1", features = ["v7"] }
 rand = "0.9"
 thiserror = "2"
