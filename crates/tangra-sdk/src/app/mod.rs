@@ -24,11 +24,13 @@ pub(crate) mod chain;
 mod client;
 mod conn;
 pub mod endpoint;
+mod platform;
 pub(crate) mod serve;
 
 pub use chain::PeerIdentity;
 pub use client::{ClientError, PeerChannel};
 pub use conn::{GrpcChannel, ServiceConn};
+pub use platform::GATEWAY_SERVICE;
 pub use serve::ConnInfo;
 
 use std::future::Future;
@@ -62,6 +64,10 @@ use serve::{HandshakeError, HttpService, Proto, ServeOptions};
 /// How long `run` waits for in-flight calls after a stop signal (Kratos
 /// `StopTimeout`).
 pub const STOP_TIMEOUT: Duration = Duration::from_secs(10);
+
+/// How long `run` waits for the ready hooks after a stop signal (the
+/// gateway deregistration has a 5s deadline).
+pub const HOOK_STOP_TIMEOUT: Duration = Duration::from_secs(6);
 
 /// A startup failure. Never a degraded app: every security prerequisite
 /// must be met.
@@ -874,6 +880,10 @@ impl App {
             .unwrap_or_default();
         let app = self.clone();
         let hook_stop = self.inner.stop.child_token();
+        // Ready hooks are awaited on shutdown (bounded) so a gateway lease is
+        // withdrawn before the pool closes.
+        let hook_tracker = TaskTracker::new();
+        let ht = hook_tracker.clone();
         let hook_task = tokio::spawn(async move {
             while !app.ready() {
                 tokio::select! {
@@ -882,7 +892,7 @@ impl App {
                 }
             }
             for h in hooks {
-                tokio::spawn(h(app.clone(), hook_stop.clone()));
+                ht.spawn(h(app.clone(), hook_stop.clone()));
             }
         });
 
@@ -890,6 +900,11 @@ impl App {
         self.inner.rt.logger.info("shutting down", vec![]);
         self.inner.stop.cancel();
         hook_task.abort();
+        let _ = hook_task.await;
+        hook_tracker.close();
+        let hooks_done = tokio::spawn(async move {
+            let _ = tokio::time::timeout(HOOK_STOP_TIMEOUT, hook_tracker.wait()).await;
+        });
         shutdown.cancel();
         for s in servers {
             let _ = s.await;
@@ -900,6 +915,7 @@ impl App {
         }
         admin_stop.cancel();
         let _ = tokio::time::timeout(Duration::from_secs(6), admin).await;
+        let _ = hooks_done.await;
         self.close().await;
         Ok(())
     }

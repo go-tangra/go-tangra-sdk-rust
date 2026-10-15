@@ -10,9 +10,33 @@ Crates:
   tonic/prost.
 - `tangra-sdk` - config, logging, error vocabulary, list queries, correlation,
   SPIFFE identity (file and lcm enrolment providers), mTLS (rustls), service
-  policy, admin listener and the `App` runtime (axum HTTP + tonic gRPC).
+  policy, admin listener and the `App` runtime (axum HTTP + tonic gRPC);
+  platform integration:
+  - `auth` - offline EdDSA token verification (keys from `auth.v1.Keys/List`
+    or JWKS, revocations from `auth.v1.Sessions/RevokedSince`), the axum
+    `User` extractor and `UserAuthLayer`, permission/role/grant
+    `Registration`, and `AuthzClient` (`Check`, `BatchCheck`, `ListMembers`);
+  - `gateway` - the `gateway.v1.Registry` register/renew/deregister loop;
+  - `manifest` - the gateway manifest builder, the gateway's own validation
+    (schema + semantic rules), routes derived from OpenAPI `x-freya-*`
+    extensions, and a version pin.
 
-Status: work in progress (phases 1-2: foundation, identity, transport, runtime).
+Status: work in progress (phases 1-3: foundation, identity, transport,
+runtime, gateway/auth platform integration).
+
+```rust,ignore
+let verifier = app.user_auth(auth::Config { issuer: cfg.gateway.issuer.clone(), ..Default::default() })?;
+app.auth_registration(registration())?;           // 5s retry, then every 5 min
+app.gateway_registration(manifest())?;            // after ready; deregisters on shutdown
+let api = Router::new().route("/api/orders/v1/me", get(|u: auth::User| async move { u.user_id }))
+    .layer(auth::UserAuthLayer::new(verifier));
+app.run(Services::new().http(api)).await?;
+```
+
+The manifest validator and the token verifier are cross-checked against the
+Go originals (portal `internal/manifest`, authclient `VerifyToken`, deployer
+and warden route derivation); the fixtures and the Go programs that produced
+the expected results are under `crates/tangra-sdk/tests/fixtures/`.
 
 ```sh
 cargo fmt --check
@@ -49,3 +73,35 @@ Behaviour follows go-tangra v4.10.0 unless listed here.
   Go starts one per `Watch` call. With a single watcher they behave the same.
 - **pprof** does not exist in Rust; `admin.enable_pprof` is accepted and logged.
 - **Policy decision cache**: no LRU cache. Decisions are the same.
+
+Platform packages (auth `sdk/v4.3.0` authclient, portal `sdk/v4.2.0`
+gatewayclient) follow Go unless listed here.
+
+- **Gateway build version**: Go falls back to the main module version from
+  the Go build info; Rust has none the SDK can read, so call
+  `gateway::set_build_version(env!("CARGO_PKG_VERSION"))` (or set
+  `Options::build_version`).
+- **Gateway wiring validates up front**: `App::gateway_registration` runs the
+  gateway's manifest validation and the docs-digest check when called and
+  returns an error, where a Go module would register and be refused
+  (`manifest_invalid`) at the maximum backoff forever.
+- **Platform channels** are resolved from the app's client pool on every
+  call (`ServiceConn`), so a trust-bundle rotation is picked up; Go modules
+  keep the `ClientConn` obtained at start.
+- **Ready hooks are awaited on shutdown** (at most 6s) so the gateway lease
+  is withdrawn before the client pool closes; Go's deregistration races
+  process exit.
+- **Token JSON**: claims are decoded with encoding/json's rules
+  (case-insensitive names, last duplicate wins, `null` keeps a string,
+  quoted NumericDates). Invalid UTF-8 inside a claim string is refused here
+  (Go replaces it with U+FFFD and decodes on).
+- **JWKS over HTTPS** (`HttpKeys`) does not follow redirects (Go's
+  `http.Client` follows up to 10) and parses JWK fields case-sensitively.
+- **Ed25519** verification uses ring (cofactorless, canonical `S`, like Go's
+  `crypto/ed25519`); behaviour on non-canonical public-key encodings is not
+  cross-checked.
+- **Log attributes** holding lists (`sample`, `roles` in the registration
+  logs) are rendered as one string; slog writes a JSON array.
+- **OpenAPI routes**: an operation that is both `x-freya-public` and carries
+  `x-freya-permission` is refused (warden's rule); the deployer's builder
+  lets `public` win.
