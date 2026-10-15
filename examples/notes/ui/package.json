@@ -1,0 +1,39 @@
+{
+  "name": "tangra-notes-ui",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc --noEmit -p tsconfig.app.json && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . && vue-tsc --noEmit -p tsconfig.app.json && go-tangra-ui-check-no-legacy"
+  },
+  "dependencies": {
+    "@casl/ability": "^7.0.1",
+    "@casl/vue": "^3.0.1",
+    "@go-tangra/ui": "^4.10.0",
+    "pinia": "^4.0.3",
+    "vue": "^3.5.42",
+    "vue-router": "^5.3.1",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.0",
+    "@iconify-json/mdi": "^1.2.3",
+    "@iconify/tailwind4": "^1.2.3",
+    "@module-federation/vite": "^1.22.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-vue": "^6.0.9",
+    "eslint": "^9.39.0",
+    "eslint-plugin-vue": "^10.6.0",
+    "flyonui": "^2.4.1",
+    "globals": "^16.0.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.54.0",
+    "vite": "^8.3.0",
+    "vue-eslint-parser": "^10.2.0",
+    "vue-tsc": "^3.2.4"
+  }
+}

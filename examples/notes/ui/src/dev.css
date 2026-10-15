@@ -1,0 +1,4 @@
+/* Standalone development only (npm run dev): the full platform theme the shell normally provides. */
+@import "tailwindcss";
+@import "@go-tangra/ui/theme.css";
+@import "@go-tangra/ui/sources.css";
