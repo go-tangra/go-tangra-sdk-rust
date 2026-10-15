@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["crates/tangra-proto", "crates/tangra-sdk"]
+members = ["crates/tangra-proto", "crates/tangra-sdk", "examples/notes"]
 
 [workspace.package]
 version = "0.1.0"

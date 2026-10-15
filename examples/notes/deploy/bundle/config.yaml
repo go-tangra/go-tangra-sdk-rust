@@ -1,0 +1,32 @@
+# notes configuration, rendered by the gateway's add-module wizard: every
+# ${...} below was filled from the core's own configuration, generated values
+# or the inputs given in the wizard.
+service_name: notes
+trust_domain: ${TRUST_DOMAIN}
+env: production
+identity:
+  provider: provided
+enroll:
+  enabled: true
+  enroll_url: ${LCM_ENROLL_URL}
+  lcm_grpc: ${LCM_GRPC}
+  tenant_id: ${MESH_TENANT_ID}
+  token_file: /tokens/enrollment.token
+  state_file: /state/svid.json
+authz: { source: file, path: /app/policy.yaml }
+server: { grpc_addr: 0.0.0.0:9965, http_addr: 0.0.0.0:9966 }
+admin: { addr: 127.0.0.1:9695 }
+discovery:
+  static:
+    gateway: ["${GATEWAY_GRPC}"]
+    auth: ["${AUTH_GRPC}"]
+    lcm: ["${LCM_GRPC}"]
+# The core's event bus: notes.created reaches the browser through the gateway.
+valkey:
+  addresses: ["${VALKEY_ADDRESS}"]
+  username: notes
+  password: "${VALKEY_PASSWORD}"
+  ca_file: /tls/valkey-ca.pem
+events: { enabled: true }
+gateway: { service: gateway, issuer: ${GATEWAY_ISSUER} }
+limits_notes: { max_notes_per_tenant: 10000 }

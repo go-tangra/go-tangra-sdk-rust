@@ -1,0 +1,9 @@
+# Freya service-to-service policy for notes (rendered for this core's trust
+# domain): deny by default; only the gateway reaches the module.
+version: notes-join-1
+rules:
+  - id: gateway-forwards
+    from: ["spiffe://${TRUST_DOMAIN}/svc/gateway"]
+    to: ["notes"]
+    operations: ["GET *", "HEAD *", "POST *", "PUT *"]
+    effect: allow

@@ -1883,6 +1883,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "tangra-notes"
+version = "1.0.0"
+dependencies = [
+ "axum",
+ "bytes",
+ "chrono",
+ "http",
+ "include_dir",
+ "regex",
+ "serde",
+ "serde_json",
+ "tangra-proto",
+ "tangra-sdk",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "tokio-util",
+ "tonic",
+ "tower",
+ "uuid",
+]
+
+[[package]]
 name = "tangra-proto"
 version = "0.1.0"
 dependencies = [

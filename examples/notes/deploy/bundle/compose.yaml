@@ -1,0 +1,31 @@
+# notes join bundle, rendered by the gateway's add-module wizard.
+#   docker compose up -d
+# Values come from .env (written by the gateway: core addresses, generated
+# values and the host inputs you gave). private/ holds the single-use
+# enrolment token and the mesh CA.
+name: tangra-notes
+services:
+  notes:
+    image: ${MODULE_IMAGE}:${MODULE_VERSION}
+    restart: unless-stopped
+    command: ["-config", "/app/config.yaml"]
+    environment:
+      FREYA_ADVERTISE_HOST: ${MODULE_ADVERTISE_HOST}
+    ports:
+      - "${MODULE_BIND_IP}:9965:9965"
+      - "${MODULE_BIND_IP}:9966:9966"
+    volumes:
+      - ./config.yaml:/app/config.yaml:ro
+      - ./policy.yaml:/app/policy.yaml:ro
+      - ./private/enrollment.token:/tokens/enrollment.token:ro
+      - ${VALKEY_CA_FILE}:/tls/valkey-ca.pem:ro
+      - notes-state:/state
+    # The image has no wget/curl: the binary probes its own admin /readyz.
+    healthcheck:
+      test: ["CMD", "tangra-notes", "--healthcheck", "-config", "/app/config.yaml"]
+      interval: 10s
+      timeout: 3s
+      retries: 30
+      start_period: 20s
+volumes:
+  notes-state: {}

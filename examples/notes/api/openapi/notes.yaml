@@ -1,0 +1,139 @@
+openapi: 3.1.0
+info:
+  title: Notes API
+  version: 1.0.0
+  description: >
+    Tenant-scoped notes: the go-tangra Rust SDK's example module.
+    Gateway-proxied under /api/notes. Every route declares an
+    x-freya-permission (or x-freya-public); the gateway enforces it before
+    proxying, and the module derives its gateway routes from this document.
+servers:
+  - url: /
+components:
+  parameters:
+    csrf:
+      name: X-CSRF-Token
+      in: header
+      required: true
+      schema: { type: string, maxLength: 128 }
+    id:
+      name: id
+      in: path
+      required: true
+      schema: { type: string, maxLength: 64 }
+    # List contract (go-tangra specs/032-server-side-tables, contracts/http-list.md).
+    page:
+      name: page
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, maximum: 2147483647 }
+    pageSize:
+      name: page_size
+      in: query
+      required: false
+      schema: { type: integer, minimum: 1, maximum: 200 }
+    order:
+      name: order
+      in: query
+      required: false
+      description: 'sort direction; defaults to the chosen field''s default direction'
+      schema: { type: string, enum: [asc, desc] }
+  schemas:
+    Error:
+      type: object
+      required: [reason]
+      properties:
+        reason: { type: string }
+        detail: { type: object }
+    FieldErrors:
+      type: object
+      description: '422 validation_failed: detail.fields maps a body field to a code (required, too_long, invalid); values are never echoed.'
+      properties:
+        reason: { type: string, enum: [validation_failed] }
+        detail:
+          type: object
+          properties:
+            fields: { type: object, additionalProperties: { type: string } }
+    Info:
+      type: object
+      required: [module, version]
+      properties:
+        module: { type: string }
+        version: { type: string }
+    Note:
+      type: object
+      required: [id, title, body, author_id, created_at, updated_at]
+      properties:
+        id: { type: string }
+        title: { type: string, maxLength: 200 }
+        body: { type: string, maxLength: 10000 }
+        author_id: { type: string }
+        created_at: { type: string, format: date-time }
+        updated_at: { type: string, format: date-time }
+    NotePage:
+      type: object
+      required: [items, total, page, page_size, sort, order]
+      properties:
+        items: { type: array, items: { $ref: '#/components/schemas/Note' } }
+        total: { type: integer }
+        page: { type: integer, description: 'the page returned (a page beyond the end answers the last page)' }
+        page_size: { type: integer }
+        sort: { type: string, enum: [title, created_at, updated_at] }
+        order: { type: string, enum: [asc, desc] }
+    NewNote:
+      type: object
+      additionalProperties: false
+      required: [title]
+      properties:
+        title: { type: string, minLength: 1, maxLength: 200 }
+        body: { type: string, maxLength: 10000 }
+paths:
+  /api/notes/v1/info:
+    get:
+      operationId: getInfo
+      summary: The module name and release (no sign-in needed).
+      x-freya-public: true
+      responses:
+        '200': { description: info, content: { application/json: { schema: { $ref: '#/components/schemas/Info' } } } }
+  /api/notes/v1/notes:
+    get:
+      operationId: listNotes
+      x-freya-permission: 'notes:read'
+      parameters:
+        - { $ref: '#/components/parameters/page' }
+        - { $ref: '#/components/parameters/pageSize' }
+        - { name: sort, in: query, description: 'default created_at (desc)', schema: { type: string, enum: [title, created_at, updated_at] } }
+        - { $ref: '#/components/parameters/order' }
+        - { name: q, in: query, description: 'case-insensitive title substring', schema: { type: string, maxLength: 100 } }
+      responses:
+        '200': { description: 'page of notes (newest first by default)', content: { application/json: { schema: { $ref: '#/components/schemas/NotePage' } } } }
+        '422': { description: 'invalid list parameter (detail.param)', content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+    post:
+      operationId: createNote
+      x-freya-permission: 'notes:write'
+      x-freya-timeout-seconds: 10
+      parameters: [{ $ref: '#/components/parameters/csrf' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/NewNote' } } } }
+      responses:
+        '201': { description: created, content: { application/json: { schema: { $ref: '#/components/schemas/Note' } } } }
+        '400': { description: malformed_body, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '409': { description: 'conflict (the tenant holds limits_notes.max_notes_per_tenant notes)', content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '422': { description: validation_failed, content: { application/json: { schema: { $ref: '#/components/schemas/FieldErrors' } } } }
+  /api/notes/v1/notes/{id}:
+    get:
+      operationId: getNote
+      x-freya-permission: 'notes:read'
+      parameters: [{ $ref: '#/components/parameters/id' }]
+      responses:
+        '200': { description: note, content: { application/json: { schema: { $ref: '#/components/schemas/Note' } } } }
+        '404': { description: 'not_found (also for another tenant''s note)', content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  /api/notes/v1/notes/{id}/remove:
+    post:
+      operationId: removeNote
+      description: 'Authors remove their own notes; removing another author''s note also needs notes:admin, which the module checks with auth.'
+      x-freya-permission: 'notes:write'
+      parameters: [{ $ref: '#/components/parameters/csrf' }, { $ref: '#/components/parameters/id' }]
+      responses:
+        '204': { description: removed }
+        '403': { description: 'forbidden (another author''s note without notes:admin)', content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '404': { description: not_found, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
