@@ -1,0 +1,20 @@
+[package]
+name = "tangra-proto"
+description = "go-tangra v4 platform protos (gateway.v1, auth.v1, lcm.v1) for tonic/prost"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license-file.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[dependencies]
+prost.workspace = true
+prost-types.workspace = true
+tonic.workspace = true
+tonic-prost.workspace = true
+
+[build-dependencies]
+prost-build.workspace = true
+tonic-prost-build.workspace = true
+protoc-bin-vendored.workspace = true

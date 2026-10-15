@@ -1,0 +1,276 @@
+syntax = "proto3";
+
+package auth.v1;
+
+option go_package = "github.com/go-tangra/go-tangra-auth/sdk/v4/api/proto/auth/v1;authv1";
+
+import "google/protobuf/timestamp.proto";
+
+// Service-to-service API. Reached only over the Freya mTLS channel; the calling
+// service's SPIFFE identity is the actor. All methods are subject to the Freya
+// authorization policy of the auth service (policy.yaml) in addition to the
+// checks documented per method.
+
+service Keys {
+  // List returns the currently published verification keys (JWKS equivalent).
+  rpc List(ListKeysRequest) returns (ListKeysResponse);
+}
+
+service Sessions {
+  // RevokedSince returns revocation entries after the cursor (bounded delay
+  // feed for offline verifiers). Cursor "" = last 60 minutes.
+  rpc RevokedSince(RevokedSinceRequest) returns (RevokedSinceResponse);
+  // Watch streams revocation entries as they happen (optional fast path).
+  rpc Watch(WatchRequest) returns (stream Revocation);
+  // Introspect validates a token server-side (rare path; audited).
+  rpc Introspect(IntrospectRequest) returns (IntrospectResponse);
+  // Exchange resolves a browser session cookie exactly like the console path
+  // and mints a platform access token for it. Policy: the gateway identity only.
+  rpc Exchange(ExchangeRequest) returns (ExchangeResponse);
+  // MintToken refreshes a token for a session that is already verified
+  // (before expiry, without re-sending the cookie). Refused once the session
+  // is no longer live. Policy: the gateway identity only.
+  rpc MintToken(MintTokenRequest) returns (MintTokenResponse);
+}
+
+service Enrollment {
+  // MintEnrollmentToken issues a single-use, short-lived token authorising the
+  // enrollment of the given SPIFFE paths in a tenant (the credential a workload
+  // presents to lcm for its FIRST SVID). ttl_seconds <= 0 means 10 minutes; at
+  // most 24 hours, a longer ttl is refused (InvalidArgument). Policy:
+  // gateway/console identities only.
+  rpc MintEnrollmentToken(MintEnrollmentTokenRequest) returns (MintEnrollmentTokenResponse);
+  // VerifyEnrollmentToken validates a token (signature, audience, expiry) and
+  // BURNS its jti so it can be used at most once. Policy: the lcm identity only.
+  rpc VerifyEnrollmentToken(VerifyEnrollmentTokenRequest) returns (VerifyEnrollmentTokenResponse);
+  // TokenStatus reports whether an enrollment token's jti has been used (burned
+  // by VerifyEnrollmentToken) and when. An unknown jti is consumed=false; a jti
+  // that is not a UUID is InvalidArgument. Policy: the gateway identity only.
+  rpc TokenStatus(TokenStatusRequest) returns (TokenStatusResponse);
+}
+
+service Authorization {
+  // Check answers "may user perform action on resource in tenant".
+  rpc Check(CheckRequest) returns (CheckResponse);
+  // BatchCheck answers many questions for the same user/tenant.
+  rpc BatchCheck(BatchCheckRequest) returns (BatchCheckResponse);
+  // RegisterPermissions declares the resources/actions a service exposes
+  // (FR-015). Idempotent; the caller's SPIFFE ID is recorded as registrant.
+  rpc RegisterPermissions(RegisterPermissionsRequest) returns (RegisterPermissionsResponse);
+}
+
+message ListKeysRequest {}
+message ListKeysResponse { repeated Key keys = 1; }
+message Key {
+  string kid = 1;
+  string kty = 2;            // "OKP"
+  string crv = 3;            // "Ed25519"
+  bytes  public_key = 4;     // raw 32 bytes
+  string state = 5;          // active | retiring | retired
+  google.protobuf.Timestamp not_after = 6; // last moment a token signed with it can be valid
+}
+
+message RevokedSinceRequest { string cursor = 1; uint32 limit = 2; }
+message RevokedSinceResponse { repeated Revocation revocations = 1; string next_cursor = 2; }
+message WatchRequest { string cursor = 1; }
+message Revocation {
+  google.protobuf.Timestamp ts = 1;
+  string kind = 2;           // session | user | tenant
+  string subject_id = 3;
+  string tenant_id = 4;
+  string reason = 5;         // closed vocabulary
+}
+
+message IntrospectRequest { string token = 1; }
+message IntrospectResponse {
+  bool active = 1;
+  string reason = 2;         // expired | revoked | invalid | tenant_suspended | user_inactive
+  string user_id = 3;
+  string tenant_id = 4;
+  string session_id = 5;
+  repeated string roles = 6;
+  google.protobuf.Timestamp expires_at = 7;
+}
+
+message ExchangeRequest {
+  string cookie_secret = 1;
+  string audience = 2; // optional aud claim (e.g. "gateway")
+}
+message SessionIdentity {
+  string user_id = 1;
+  string tenant_id = 2;
+  string session_id = 3;
+  repeated string roles = 4;
+  repeated string amr = 5;
+  bool operator = 6; // member of the platform tenant
+  string display_name = 7; // "First Last" | explicit display name | email local part
+  string avatar_url = 8;   // gateway-relative, content-addressed; "" when none
+}
+message ExchangeResponse {
+  SessionIdentity identity = 1;
+  string access_token = 2;
+  google.protobuf.Timestamp expires_at = 3;
+}
+message MintTokenRequest {
+  string tenant_id = 1;
+  string session_id = 2;
+  string audience = 3;
+}
+message MintTokenResponse {
+  SessionIdentity identity = 1;
+  string access_token = 2;
+  google.protobuf.Timestamp expires_at = 3;
+}
+
+message MintEnrollmentTokenRequest {
+  string tenant_id = 1;
+  repeated string spiffe_paths = 2;
+  int64 ttl_seconds = 3;
+}
+message MintEnrollmentTokenResponse {
+  string token = 1;
+  google.protobuf.Timestamp expires_at = 2;
+}
+message TokenStatusRequest {
+  string jti = 1;
+}
+message TokenStatusResponse {
+  bool consumed = 1;
+  google.protobuf.Timestamp consumed_at = 2; // unset when not consumed
+}
+message VerifyEnrollmentTokenRequest {
+  string token = 1;
+}
+message VerifyEnrollmentTokenResponse {
+  string tenant_id = 1;
+  repeated string spiffe_paths = 2;
+  string jti = 3;
+}
+
+message CheckRequest {
+  string tenant_id = 1;
+  string user_id = 2;
+  string resource = 3;       // e.g. "invoices"
+  string action = 4;         // e.g. "read"
+  map<string, string> context = 5; // reserved for conditions
+  // Module owning the permission (feature 019). Empty: the caller's module
+  // (services) or the legacy permission (gateway). A service other than the
+  // gateway may only name its own module.
+  string module = 6;
+}
+message CheckResponse {
+  bool allowed = 1;
+  string reason = 2;         // role:<slug> | no_permission | user_inactive | tenant_suspended | unknown_permission
+  string policy_version = 3; // tenant version used for the decision
+}
+message BatchCheckRequest { string tenant_id = 1; string user_id = 2; repeated PermissionRef permissions = 3; }
+message PermissionRef {
+  string resource = 1;
+  string action = 2;
+  string module = 3; // same rules as CheckRequest.module (feature 019)
+}
+message BatchCheckResponse { repeated CheckResponse results = 1; }
+
+message RegisterPermissionsRequest {
+  repeated PermissionDef permissions = 1;
+  // tenant_ids empty = register for every tenant the service is entitled to serve.
+  repeated string tenant_ids = 2;
+  // builtin_grants adds the registrant's own permissions to built-in roles
+  // (owner, admin, member, auditor, operator) of every tenant; idempotent.
+  // Permissions not in this request are refused (feature 005).
+  repeated BuiltinGrant builtin_grants = 3;
+  // Module the registration is for (feature 019). Empty: the caller's service
+  // name (gateway without module: legacy rows only). Must equal the caller's
+  // service name unless the caller is the gateway.
+  string module = 4;
+  string module_display_name = 5; // 1-120 chars; kept when empty
+  repeated ModuleRoleDef roles = 6; // at most 20; refused from the gateway
+  // true: roles is the module's complete role set (absent slugs are retired).
+  // false: roles are left unchanged (gateway, old modules).
+  bool declares_roles = 7;
+  // true: builtin_grants is the module's complete built-in grant set: in every
+  // tenant, a built-in role's grants of this module's permissions that the
+  // set no longer lists are revoked (a module withdrawing a grant reaches
+  // existing tenants). false: grants are only added (gateway, old modules).
+  // Legacy (module-less) grants are never touched.
+  bool declares_builtin_grants = 8;
+}
+// ModuleRoleDef is a locked role a module provides in every tenant (feature 019).
+message ModuleRoleDef {
+  string slug = 1;                 // ^[a-z0-9](?:[a-z0-9-]{0,30}[a-z0-9])?$
+  string display_name = 2;         // e.g. "Warden viewer"
+  string description = 3;          // at most 256 characters
+  repeated string permissions = 4; // "resource:action" of this request, 1-200
+}
+message BuiltinGrant { string role = 1; repeated string permissions = 2; }
+message PermissionDef { string resource = 1; string action = 2; string description = 3; }
+message RegisterPermissionsResponse {
+  uint32 registered = 1;                    // permissions x tenants
+  repeated SkippedGrant skipped_grants = 2; // built-in grants that found no role (feature 019)
+  repeated RoleError role_errors = 3;       // roles rejected individually
+  uint32 roles_upserted = 4;                // definitions created or changed
+  repeated string roles_retired = 5;        // slugs retired by this registration
+  uint32 grants_revoked = 6;                // built-in grants withdrawn (declares_builtin_grants), all tenants
+}
+// SkippedGrant reports a built-in grant whose role does not exist in some tenants.
+message SkippedGrant {
+  string role = 1;                       // built-in slug, e.g. "operator"
+  uint32 tenants = 2;                    // tenants without that role
+  repeated string sample_tenant_ids = 3; // at most 5
+  string reason = 4;                     // role_missing
+}
+// RoleError names a module role the registration refused.
+message RoleError {
+  string slug = 1;
+  string reason = 2; // invalid_slug | invalid_name | foreign_permission | too_many_permissions | no_permissions | duplicate
+}
+
+// Profiles answers "who is this user id" for services on the Freya channel.
+// The tenant must match the caller's grant like Authorization.Check; the phone
+// number is never returned.
+service Profiles {
+  rpc Lookup(LookupProfilesRequest) returns (LookupProfilesResponse);
+  // ListMembers pages the ids of the active members of a tenant (feature 006:
+  // "everyone" messages); with user_ids it returns the active ones among
+  // them. Policy: services allowed by policy.yaml (the notification module).
+  rpc ListMembers(ListMembersRequest) returns (ListMembersResponse);
+  // Contacts returns the e-mail address of active members of a tenant (feature
+  // 027: signing invitations and certificate subjects). Policy: services allowed
+  // by policy.yaml only (the signing module). Inactive, foreign and unknown ids
+  // and users without an e-mail are omitted; the phone number is never returned.
+  rpc Contacts(LookupContactsRequest) returns (LookupContactsResponse);
+}
+message LookupContactsRequest {
+  string tenant_id = 1;
+  repeated string user_ids = 2; // 1..100
+}
+message Contact {
+  string user_id = 1;
+  string display_name = 2;
+  string email = 3;
+}
+message LookupContactsResponse {
+  repeated Contact contacts = 1; // ordered by user id
+}
+message ListMembersRequest {
+  string tenant_id = 1;
+  string cursor = 2;            // last id of the previous page
+  int32 limit = 3;              // 1..1000, default 1000
+  repeated string user_ids = 4; // at most 1000: filter instead of paging
+}
+message ListMembersResponse {
+  repeated string user_ids = 1; // active users only, ordered by id
+  string next_cursor = 2;       // empty on the last page
+}
+message LookupProfilesRequest {
+  string tenant_id = 1;
+  repeated string user_ids = 2; // at most 100
+}
+message PublicProfile {
+  string user_id = 1;
+  string display_name = 2;
+  string avatar_url = 3;
+}
+message LookupProfilesResponse {
+  repeated PublicProfile profiles = 1; // unknown ids omitted
+}

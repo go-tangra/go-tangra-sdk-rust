@@ -1,0 +1,116 @@
+syntax = "proto3";
+
+// gateway.v1 is the private registration API modules call over the Freya
+// channel. The caller's SPIFFE identity is the registrant identity.
+package gateway.v1;
+
+import "google/protobuf/duration.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/go-tangra/go-tangra-portal/sdk/v4/api/proto/gateway/v1;gatewayv1";
+
+service Registry {
+  // Register validates the manifest, records the instance and returns a lease.
+  rpc Register(RegisterRequest) returns (Lease);
+  // Renew extends a lease; refused after drain/revoke or manifest drift.
+  rpc Renew(RenewRequest) returns (Lease);
+  // Deregister withdraws one instance immediately.
+  rpc Deregister(DeregisterRequest) returns (DeregisterResponse);
+  // Watch streams registry changes (other gateway instances, operations UI).
+  rpc Watch(WatchRequest) returns (stream RegistryEvent);
+}
+
+message RegisterRequest {
+  Manifest manifest = 1;
+  string instance_id = 2;          // stable per process
+  Backend backend = 3;
+  // build_version is the release this instance runs (e.g. "4.10.2"), stamped
+  // at build time. It is informational and per instance: it never takes part
+  // in manifest drift detection (manifest.version is the contract version).
+  string build_version = 4;
+  // docs_digest identifies the documentation bundle this instance ships: the
+  // lowercase hex SHA-256 (64 characters) of the bundle, or "" when the module
+  // ships no documentation. Like build_version it is per instance and never
+  // takes part in manifest drift detection, so editing documentation needs no
+  // manifest version bump. A malformed value is refused (docs_digest_invalid).
+  // The gateway will use a new digest to fetch and index the bundle.
+  string docs_digest = 5;
+}
+message RenewRequest { string lease_id = 1; }
+message DeregisterRequest { string lease_id = 1; }
+message DeregisterResponse {}
+message WatchRequest { string cursor = 1; }
+
+message Lease {
+  string lease_id = 1;
+  google.protobuf.Duration ttl = 2;      // 30s
+  google.protobuf.Duration renew_every = 3; // 10s
+  string module = 4;
+  uint64 registry_version = 5;
+}
+
+message Backend {
+  string http_url = 1;    // https://host:port served on the module's Freya HTTP server
+  string grpc_target = 2; // host:port of the module's Freya gRPC server
+}
+
+message Manifest {
+  string module = 1;
+  string display_name = 2;
+  string version = 3;
+  repeated string prefixes = 4;
+  repeated Route routes = 5;
+  repeated Method methods = 6;
+  repeated Permission permissions = 7;
+  repeated Ability abilities = 8;
+  Remote remote = 9;
+  repeated NavEntry nav = 10;
+}
+
+message Route {
+  string method = 1;                 // GET, POST, PUT, PATCH, DELETE
+  string path = 2;                   // /api/orders/{id}
+  string permission = 3;             // resource:action; empty only when public = true
+  bool public = 4;
+  uint64 max_body_bytes = 5;         // 0 = gateway default
+  google.protobuf.Duration timeout = 6;
+  bool client_address = 7;           // forward X-Gateway-Client-Addr (client IP) to the module for this route
+}
+
+message Method {
+  string full_method = 1;            // /orders.v1.Orders/Get
+  string permission = 2;
+  bool public = 3;
+  bool streaming = 4;
+  google.protobuf.Duration max_stream_duration = 5;
+}
+
+message Permission { string resource = 1; string action = 2; string description = 3; }
+
+// Ability is a CASL raw rule bound to an API permission.
+message Ability {
+  repeated string action = 1;        // e.g. "read", "update"
+  repeated string subject = 2;       // e.g. "Order"
+  repeated string fields = 3;
+  google.protobuf.Struct conditions = 4; // limited operator set, <= 4 KiB
+  bool inverted = 5;
+  string reason = 6;
+  string requires = 7;               // resource:action declared in permissions
+}
+
+message Remote {
+  string entry = 1;                  // /m/<module>/mf-manifest.json
+  repeated string exposes = 2;       // ./routes, ./nav, ./boot
+  string integrity = 3;              // optional SRI for the entry
+}
+
+message NavEntry { string title = 1; string path = 2; string icon = 3; int32 order = 4; string requires = 5; }
+
+message RegistryEvent {
+  google.protobuf.Timestamp ts = 1;
+  string kind = 2;                   // registered | updated | withdrawn | drained | revoked | unhealthy | recovered
+  string module = 3;
+  uint64 registry_version = 4;
+  string cursor = 5;
+}

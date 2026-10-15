@@ -1,0 +1,152 @@
+syntax = "proto3";
+
+// lcm.v1 is the service-to-service and workload-agent API of the certificate &
+// SVID lifecycle module. It is NOT proxied by the gateway: callers are
+// authenticated services or workloads on the Freya SPIFFE mTLS channel, policed
+// by the module's deploy/policy.yaml. The tenant comes from the request and the
+// actor from the verified SPIFFE identity. Responses never carry CA/issuer/DNS
+// keys; a workload private key is returned only when the module generated it.
+package lcm.v1;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "github.com/go-tangra/go-tangra-lcm/sdk/v4/api/proto/lcm/v1;lcmv1";
+
+// SVID issues, renews, revokes and verifies certificates for modules.
+service SVID {
+  // Issue mints an SVID for a SPIFFE id the caller is entitled to (its own id,
+  // a use grant, or an enrollment token). csr_pem signs the caller's key;
+  // otherwise the module generates the key and returns it once.
+  rpc Issue(IssueRequest) returns (CertificateBundle);
+  // Renew reissues an existing certificate with the same SPIFFE id.
+  rpc Renew(RenewRequest) returns (CertificateBundle);
+  // Revoke revokes a certificate and publishes the revocation.
+  rpc Revoke(RevokeRequest) returns (RevokeResponse);
+  // Verify reports whether a certificate is currently valid (not expired, not revoked).
+  rpc Verify(VerifyRequest) returns (VerifyResponse);
+  // GetTrustBundle returns the roots for a trust domain.
+  rpc GetTrustBundle(TrustBundleRequest) returns (TrustBundleResponse);
+}
+
+// Enrollment lets a new workload obtain its first SVID with an auth-minted token.
+service Enrollment {
+  rpc Enroll(EnrollRequest) returns (CertificateBundle);
+}
+
+// Events publishes lifecycle events for other modules (fan-out via the tenant stream).
+service Events {
+  rpc Publish(PublishRequest) returns (PublishResponse);
+}
+
+// Agent streams live certificate updates to a workload agent so it rotates without downtime.
+service Agent {
+  rpc Watch(WatchRequest) returns (stream CertificateUpdate);
+}
+
+// Certificates lets an authorized platform module fetch an already-issued
+// certificate (cert + chain + retained key) for deployment. Module-to-module
+// over SPIFFE mTLS, policed by policy.yaml (SR-003); never proxied by the
+// gateway. Used by the deployer to install certificates onto infrastructure.
+service Certificates {
+  rpc Download(DownloadRequest) returns (CertificateBundle);
+}
+
+enum CertificateStatus {
+  CERTIFICATE_STATUS_UNSPECIFIED = 0;
+  CERTIFICATE_STATUS_ACTIVE = 1;
+  CERTIFICATE_STATUS_EXPIRING = 2;
+  CERTIFICATE_STATUS_EXPIRED = 3;
+  CERTIFICATE_STATUS_REVOKED = 4;
+}
+
+message Certificate {
+  string id = 1;
+  string serial = 2;
+  string spiffe_id = 3;
+  string subject = 4;
+  string issuer_id = 5;
+  repeated string sans = 6;
+  google.protobuf.Timestamp not_before = 7;
+  google.protobuf.Timestamp not_after = 8;
+  string fingerprint_sha256 = 9;
+  CertificateStatus status = 10;
+}
+
+message CertificateBundle {
+  Certificate certificate = 1;
+  string cert_pem = 2;
+  string chain_pem = 3;
+  string bundle_pem = 4;   // trust roots
+  string key_pem = 5;      // present only when the module generated the key
+}
+
+message DownloadRequest {
+  string tenant_id = 1;
+  string certificate_id = 2;
+  bool include_key = 3;    // include the retained private key (when lcm holds it)
+}
+
+message IssueRequest {
+  string tenant_id = 1;
+  string issuer_id = 2;    // default issuer when empty
+  string spiffe_id = 3;
+  string csr_pem = 4;      // sign this CSR; otherwise the module generates the key
+  repeated string dns_sans = 5;
+  int64 validity_seconds = 6;
+  string correlation_id = 7;
+}
+
+message RenewRequest {
+  string tenant_id = 1;
+  string certificate_id = 2;
+  string csr_pem = 3;
+}
+
+message RevokeRequest {
+  string tenant_id = 1;
+  string certificate_id = 2;
+  string reason = 3;
+}
+message RevokeResponse { bool revoked = 1; }
+
+message VerifyRequest {
+  string tenant_id = 1;
+  string serial = 2;       // or spiffe_id / fingerprint
+  string spiffe_id = 3;
+}
+message VerifyResponse {
+  bool valid = 1;
+  CertificateStatus status = 2;
+  string reason = 3;       // no_certificate | revoked | expired | ok
+}
+
+message TrustBundleRequest { string tenant_id = 1; string trust_domain = 2; }
+message TrustBundleResponse { string bundle_pem = 1; int64 sequence = 2; }
+
+message EnrollRequest {
+  string tenant_id = 1;
+  string spiffe_id = 2;
+  string csr_pem = 3;
+  string enrollment_token = 4;   // auth-minted; empty when enrolling with the caller identity
+}
+
+message PublishRequest {
+  string tenant_id = 1;
+  repeated string user_ids = 2;  // targeted; empty + all=true for everyone
+  bool all = 3;
+  string type = 4;               // certificate.issued | renewed | revoked
+  bytes data = 5;                // JSON, no key material
+}
+message PublishResponse { string event_id = 1; }
+
+message WatchRequest {
+  string tenant_id = 1;
+  string last_event_id = 2;      // replay from here within the window
+}
+message CertificateUpdate {
+  string id = 1;
+  string type = 2;               // issued | renewed | revoked
+  string certificate_id = 3;
+  string spiffe_id = 4;
+  google.protobuf.Timestamp not_after = 5;
+}
