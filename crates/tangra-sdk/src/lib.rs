@@ -14,14 +14,22 @@ pub mod audit;
 pub mod config;
 pub mod correlation;
 pub mod error;
+pub mod fstree;
+pub mod helpdocs;
 pub mod identity;
 pub mod listquery;
 pub mod log;
 pub mod policy;
 pub mod testutil;
 pub mod tls;
+#[cfg(feature = "ui")]
+pub mod ui;
 
+mod gocompat;
 mod gofmt;
+mod goyaml;
 mod net;
 
 pub use gofmt::GoDuration;
+/// The `include_dir` crate the SDK's embedded trees ([`fstree::FileTree::from_embedded`]) accept.
+pub use include_dir;

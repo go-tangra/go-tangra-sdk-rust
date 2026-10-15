@@ -1,0 +1,10 @@
+load:
+-x.md: page path segments must be lowercase [a-z0-9-] (slug "-x")
+Upper.md: page path segments must be lowercase [a-z0-9-] (slug "Upper")
+dir_x/a.md: page path segments must be lowercase [a-z0-9-] (slug "dir_x/a")
+sp ace.md: page path segments must be lowercase [a-z0-9-] (slug "sp ace")
+lint:
+-x.md: page path segments must be lowercase [a-z0-9-] (slug "-x")
+Upper.md: page path segments must be lowercase [a-z0-9-] (slug "Upper")
+dir_x/a.md: page path segments must be lowercase [a-z0-9-] (slug "dir_x/a")
+sp ace.md: page path segments must be lowercase [a-z0-9-] (slug "sp ace")

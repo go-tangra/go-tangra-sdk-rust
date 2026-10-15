@@ -1,0 +1,4 @@
+load:
+index.md:3: kind "tutorial" is not one of guide, example, reference, faq
+lint:
+index.md:3: kind "tutorial" is not one of guide, example, reference, faq

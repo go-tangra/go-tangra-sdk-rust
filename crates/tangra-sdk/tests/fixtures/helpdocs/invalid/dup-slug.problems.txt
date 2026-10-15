@@ -1,0 +1,4 @@
+load:
+a/index.md: duplicate slug "a" (also a.md)
+lint:
+a/index.md: duplicate slug "a" (also a.md)

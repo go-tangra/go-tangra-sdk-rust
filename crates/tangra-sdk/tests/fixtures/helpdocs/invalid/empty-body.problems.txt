@@ -1,0 +1,4 @@
+load:
+index.md:5: page has no content after the front-matter
+lint:
+index.md:5: page has no content after the front-matter

@@ -1,0 +1,3480 @@
+---
+title: 0x10
+kind: guide
+---
+body
+
+%%%%
+---
+title: '0x10'
+kind: guide
+---
+body
+
+%%%%
+---
+title: "q\"x"
+kind: guide
+---
+body
+
+%%%%
+---
+title: 1.5
+kind: guide
+---
+body
+
+%%%%
+---
+title: -0
+kind: guide
+---
+body
+
+%%%%
+---
+title: +1
+kind: guide
+---
+body
+
+%%%%
+---
+title: 1e2
+kind: guide
+---
+body
+
+%%%%
+---
+title: .5
+kind: guide
+---
+body
+
+%%%%
+---
+title: 1_0
+kind: guide
+---
+body
+
+%%%%
+---
+title: 0b11
+kind: guide
+---
+body
+
+%%%%
+---
+title: -0b11
+kind: guide
+---
+body
+
+%%%%
+---
+title: 0o7
+kind: guide
+---
+body
+
+%%%%
+---
+title: 07
+kind: guide
+---
+body
+
+%%%%
+---
+title: 09
+kind: guide
+---
+body
+
+%%%%
+---
+title: 0x
+kind: guide
+---
+body
+
+%%%%
+---
+title: ~
+kind: guide
+---
+body
+
+%%%%
+---
+title: null
+kind: guide
+---
+body
+
+%%%%
+---
+title: NULL
+kind: guide
+---
+body
+
+%%%%
+---
+title: Null
+kind: guide
+---
+body
+
+%%%%
+---
+title: 
+kind: guide
+---
+body
+
+%%%%
+---
+title: true
+kind: guide
+---
+body
+
+%%%%
+---
+title: yes
+kind: guide
+---
+body
+
+%%%%
+---
+title: on
+kind: guide
+---
+body
+
+%%%%
+---
+title: off
+kind: guide
+---
+body
+
+%%%%
+---
+title: no
+kind: guide
+---
+body
+
+%%%%
+---
+title: y
+kind: guide
+---
+body
+
+%%%%
+---
+title: .inf
+kind: guide
+---
+body
+
+%%%%
+---
+title: -.inf
+kind: guide
+---
+body
+
+%%%%
+---
+title: .nan
+kind: guide
+---
+body
+
+%%%%
+---
+title: .Inf
+kind: guide
+---
+body
+
+%%%%
+---
+title: 2001-12-14
+kind: guide
+---
+body
+
+%%%%
+---
+title: 2001-12-14t21:59:43.10-05:00
+kind: guide
+---
+body
+
+%%%%
+---
+title: 2001-1-2 3:4:5
+kind: guide
+---
+body
+
+%%%%
+---
+title: 12:30
+kind: guide
+---
+body
+
+%%%%
+---
+title: 1:2:3
+kind: guide
+---
+body
+
+%%%%
+---
+title: !!str 5
+kind: guide
+---
+body
+
+%%%%
+---
+title: !!int 5
+kind: guide
+---
+body
+
+%%%%
+---
+title: !!int '5'
+kind: guide
+---
+body
+
+%%%%
+---
+title: !!float 5
+kind: guide
+---
+body
+
+%%%%
+---
+title: !!float x
+kind: guide
+---
+body
+
+%%%%
+---
+title: !!bool true
+kind: guide
+---
+body
+
+%%%%
+---
+title: !!bool x
+kind: guide
+---
+body
+
+%%%%
+---
+title: !!null ~
+kind: guide
+---
+body
+
+%%%%
+---
+title: !!null x
+kind: guide
+---
+body
+
+%%%%
+---
+title: !!binary aGVsbG8=
+kind: guide
+---
+body
+
+%%%%
+---
+title: !!binary @@
+kind: guide
+---
+body
+
+%%%%
+---
+title: !local x
+kind: guide
+---
+body
+
+%%%%
+---
+title: ! 5
+kind: guide
+---
+body
+
+%%%%
+---
+title: !!seq x
+kind: guide
+---
+body
+
+%%%%
+---
+title: &a x
+kind: guide
+---
+body
+
+%%%%
+---
+title: []
+kind: guide
+---
+body
+
+%%%%
+---
+title: {}
+kind: guide
+---
+body
+
+%%%%
+---
+title: [a]
+kind: guide
+---
+body
+
+%%%%
+---
+title: [[a]]
+kind: guide
+---
+body
+
+%%%%
+---
+title: [~]
+kind: guide
+---
+body
+
+%%%%
+---
+title: [1, true, ~, '']
+kind: guide
+---
+body
+
+%%%%
+---
+title: {a: b}
+kind: guide
+---
+body
+
+%%%%
+---
+title: |
+  lit
+
+kind: guide
+---
+body
+
+%%%%
+---
+title: >-
+  fold
+  ed
+
+kind: guide
+---
+body
+
+%%%%
+---
+title: "multi
+  line"
+kind: guide
+---
+body
+
+%%%%
+---
+title: plain
+  continued
+kind: guide
+---
+body
+
+%%%%
+---
+title: 9223372036854775807
+kind: guide
+---
+body
+
+%%%%
+---
+title: 9223372036854775808
+kind: guide
+---
+body
+
+%%%%
+---
+title: -9223372036854775808
+kind: guide
+---
+body
+
+%%%%
+---
+title: -9223372036854775809
+kind: guide
+---
+body
+
+%%%%
+---
+title: 18446744073709551615
+kind: guide
+---
+body
+
+%%%%
+---
+title: 1e19
+kind: guide
+---
+body
+
+%%%%
+---
+title: -1e19
+kind: guide
+---
+body
+
+%%%%
+---
+title: 9.3e18
+kind: guide
+---
+body
+
+%%%%
+---
+title: 0.0000001
+kind: guide
+---
+body
+
+%%%%
+---
+title: #notcomment
+kind: guide
+---
+body
+
+%%%%
+---
+title: a # comment
+kind: guide
+---
+body
+
+%%%%
+---
+title: 'a # quoted'
+kind: guide
+---
+body
+
+%%%%
+---
+title: "\x41\u00e9\U0001F600"
+kind: guide
+---
+body
+
+%%%%
+---
+title: 'it''s'
+kind: guide
+---
+body
+
+%%%%
+---
+title: <<
+kind: guide
+---
+body
+
+%%%%
+---
+title: =
+kind: guide
+---
+body
+
+%%%%
+---
+title: -
+kind: guide
+---
+body
+
+%%%%
+---
+title: --
+kind: guide
+---
+body
+
+%%%%
+---
+title: - a
+kind: guide
+---
+body
+
+%%%%
+---
+title: ? x
+kind: guide
+---
+body
+
+%%%%
+---
+title: @x
+kind: guide
+---
+body
+
+%%%%
+---
+title: `x
+kind: guide
+---
+body
+
+%%%%
+---
+title: %x
+kind: guide
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 0x10
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: '0x10'
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: "q\"x"
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 1.5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: -0
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: +1
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 1e2
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: .5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 1_0
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 0b11
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: -0b11
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 0o7
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 07
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 09
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 0x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: ~
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: null
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: NULL
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: Null
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: true
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: yes
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: on
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: off
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: no
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: y
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: .inf
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: -.inf
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: .nan
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: .Inf
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 2001-12-14
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 2001-12-14t21:59:43.10-05:00
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 2001-1-2 3:4:5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 12:30
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 1:2:3
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: !!str 5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: !!int 5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: !!int '5'
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: !!float 5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: !!float x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: !!bool true
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: !!bool x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: !!null ~
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: !!null x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: !!binary aGVsbG8=
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: !!binary @@
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: !local x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: ! 5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: !!seq x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: &a x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: []
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: {}
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: [a]
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: [[a]]
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: [~]
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: [1, true, ~, '']
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: {a: b}
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: |
+  lit
+
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: >-
+  fold
+  ed
+
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: "multi
+  line"
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: plain
+  continued
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 9223372036854775807
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 9223372036854775808
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: -9223372036854775808
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: -9223372036854775809
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 18446744073709551615
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 1e19
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: -1e19
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 9.3e18
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 0.0000001
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: #notcomment
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: a # comment
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 'a # quoted'
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: "\x41\u00e9\U0001F600"
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: 'it''s'
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: <<
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: =
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: -
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: --
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: - a
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: ? x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: @x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: `x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+order: %x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 0x10
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: '0x10'
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: "q\"x"
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 1.5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: -0
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: +1
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 1e2
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: .5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 1_0
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 0b11
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: -0b11
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 0o7
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 07
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 09
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 0x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: ~
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: null
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: NULL
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: Null
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: true
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: yes
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: on
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: off
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: no
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: y
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: .inf
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: -.inf
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: .nan
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: .Inf
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 2001-12-14
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 2001-12-14t21:59:43.10-05:00
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 2001-1-2 3:4:5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 12:30
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 1:2:3
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: !!str 5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: !!int 5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: !!int '5'
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: !!float 5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: !!float x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: !!bool true
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: !!bool x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: !!null ~
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: !!null x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: !!binary aGVsbG8=
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: !!binary @@
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: !local x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: ! 5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: !!seq x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: &a x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: []
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: {}
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: [a]
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: [[a]]
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: [~]
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: [1, true, ~, '']
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: {a: b}
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: |
+  lit
+
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: >-
+  fold
+  ed
+
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: "multi
+  line"
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: plain
+  continued
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 9223372036854775807
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 9223372036854775808
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: -9223372036854775808
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: -9223372036854775809
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 18446744073709551615
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 1e19
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: -1e19
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 9.3e18
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 0.0000001
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: #notcomment
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: a # comment
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 'a # quoted'
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: "\x41\u00e9\U0001F600"
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: 'it''s'
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: <<
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: =
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: -
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: --
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: - a
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: ? x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: @x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: `x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+tags: %x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 0x10
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: '0x10'
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: "q\"x"
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 1.5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: -0
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: +1
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 1e2
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: .5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 1_0
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 0b11
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: -0b11
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 0o7
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 07
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 09
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 0x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: ~
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: null
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: NULL
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: Null
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: true
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: yes
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: on
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: off
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: no
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: y
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: .inf
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: -.inf
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: .nan
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: .Inf
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 2001-12-14
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 2001-12-14t21:59:43.10-05:00
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 2001-1-2 3:4:5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 12:30
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 1:2:3
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: !!str 5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: !!int 5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: !!int '5'
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: !!float 5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: !!float x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: !!bool true
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: !!bool x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: !!null ~
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: !!null x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: !!binary aGVsbG8=
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: !!binary @@
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: !local x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: ! 5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: !!seq x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: &a x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: []
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: {}
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: [a]
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: [[a]]
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: [~]
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: [1, true, ~, '']
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: {a: b}
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: |
+  lit
+
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: >-
+  fold
+  ed
+
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: "multi
+  line"
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: plain
+  continued
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 9223372036854775807
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 9223372036854775808
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: -9223372036854775808
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: -9223372036854775809
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 18446744073709551615
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 1e19
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: -1e19
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 9.3e18
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 0.0000001
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: #notcomment
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: a # comment
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 'a # quoted'
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: "\x41\u00e9\U0001F600"
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: 'it''s'
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: <<
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: =
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: -
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: --
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: - a
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: ? x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: @x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: `x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+summary: %x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 0x10
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: '0x10'
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: "q\"x"
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 1.5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: -0
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: +1
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 1e2
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: .5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 1_0
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 0b11
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: -0b11
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 0o7
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 07
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 09
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 0x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: ~
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: null
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: NULL
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: Null
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: true
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: yes
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: on
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: off
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: no
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: y
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: .inf
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: -.inf
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: .nan
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: .Inf
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 2001-12-14
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 2001-12-14t21:59:43.10-05:00
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 2001-1-2 3:4:5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 12:30
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 1:2:3
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: !!str 5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: !!int 5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: !!int '5'
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: !!float 5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: !!float x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: !!bool true
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: !!bool x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: !!null ~
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: !!null x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: !!binary aGVsbG8=
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: !!binary @@
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: !local x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: ! 5
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: !!seq x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: &a x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: []
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: {}
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: [a]
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: [[a]]
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: [~]
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: [1, true, ~, '']
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: {a: b}
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: |
+  lit
+
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: >-
+  fold
+  ed
+
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: "multi
+  line"
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: plain
+  continued
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 9223372036854775807
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 9223372036854775808
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: -9223372036854775808
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: -9223372036854775809
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 18446744073709551615
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 1e19
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: -1e19
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 9.3e18
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 0.0000001
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: #notcomment
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: a # comment
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 'a # quoted'
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: "\x41\u00e9\U0001F600"
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: 'it''s'
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: <<
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: =
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: -
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: --
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: - a
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: ? x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: @x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: `x
+---
+body
+
+%%%%
+---
+title: T
+kind: guide
+lang: %x
+---
+body
+
+%%%%
+---
+- just
+- list
+---
+b
+
+%%%%
+---
+"str"
+---
+b
+
+%%%%
+---
+~
+---
+b
+
+%%%%
+---
+[title, kind]
+---
+b
+
+%%%%
+---
+? [a]
+: b
+title: T
+kind: guide
+---
+b
+
+%%%%
+---
+1: x
+title: T
+kind: guide
+---
+b
+
+%%%%
+---
+title: &x T
+kind: guide
+summary: *x
+---
+b
+
+%%%%
+---
+base: &b {title: T}
+---
+b
+
+%%%%
+---
+<<: {title: T}
+kind: guide
+---
+b
+
+%%%%
+---
+title: T
+kind: guide
+...
+---
+b
+
+%%%%
+---
+%YAML 1.2
+---
+b
+
+%%%%
+---
+title: T
+  kind: guide
+---
+b
+
+%%%%
+---
+title: T
+kind: guide
+tags:
+- a
+- b
+---
+b
+
+%%%%
+---
+title: T
+kind: guide
+tags: [a, a, B]
+---
+b
+
+%%%%
+---
+title:	T
+kind: guide
+---
+b
+
+%%%%
+---
+title: T
+kind: guide
+
+
+---
+
+
+b
+
+%%%%
+---
+---
+b
+
+%%%%
+---
+title: T
+kind: guide
+--- 	 
+b
+
+%%%%
+---
+title: ""
+kind: ""
+---
+b
+
+%%%%
+---
+title: T
+kind: GUIDE
+audience: Operator
+---
+b
+
+%%%%
+---
+title: T
+kind: guide
+requires: a:b
+---
+b
+
+%%%%
+---
+title: T
+kind: guide
+requires: a-b.c_d:read.all
+---
+b
+
+%%%%
+---
+title: T
+kind: guide
+requires: a:B
+---
+b

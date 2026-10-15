@@ -1,0 +1,4 @@
+load:
+index.md: a root index.md is required
+lint:
+index.md: a root index.md is required

@@ -1,0 +1,10 @@
+load:
+a.png: content is image/jpeg, not image/png
+b.jpg: content is text/plain; charset=utf-8, not image/jpeg
+c.gif: content is text/html; charset=utf-8, not image/gif
+d.webp: content is text/plain; charset=utf-8, not image/webp
+lint:
+a.png: content is image/jpeg, not image/png
+b.jpg: content is text/plain; charset=utf-8, not image/jpeg
+c.gif: content is text/html; charset=utf-8, not image/gif
+d.webp: content is text/plain; charset=utf-8, not image/webp

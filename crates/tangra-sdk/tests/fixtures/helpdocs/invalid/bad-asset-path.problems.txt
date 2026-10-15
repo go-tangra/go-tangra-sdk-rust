@@ -1,0 +1,8 @@
+load:
+Img/logo.png: image path segments must be lowercase [a-z0-9_.-]
+img/_x.png: image path segments must be lowercase [a-z0-9_.-]
+img/a..b.png: image path segments must be lowercase [a-z0-9_.-]
+lint:
+Img/logo.png: image path segments must be lowercase [a-z0-9_.-]
+img/_x.png: image path segments must be lowercase [a-z0-9_.-]
+img/a..b.png: image path segments must be lowercase [a-z0-9_.-]

@@ -1,0 +1,4 @@
+load:
+index.md:2: front-matter must be a mapping of fields
+lint:
+index.md:2: front-matter must be a mapping of fields

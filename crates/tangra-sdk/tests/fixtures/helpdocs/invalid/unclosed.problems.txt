@@ -1,0 +1,4 @@
+load:
+index.md:1: front-matter is not closed (no second "---" line)
+lint:
+index.md:1: front-matter is not closed (no second "---" line)

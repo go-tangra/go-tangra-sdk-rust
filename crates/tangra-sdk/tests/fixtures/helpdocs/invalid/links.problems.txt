@@ -1,0 +1,42 @@
+load:
+index.md:5: link missing.md: missing.md not found (link to pages by their .md file)
+index.md:6: link ../outside.md: points outside docs/help
+index.md:7: link javascript:alert(1: scheme javascript: is not allowed (http, https, mailto or a relative path)
+index.md:8: link JAVA: JAVA not found (link to pages by their .md file)
+index.md:9: link data:text/html,x: scheme data: is not allowed (http, https, mailto or a relative path)
+index.md:10: image /img/a.png: images must be referenced by a relative path
+index.md:11: image https://example.org/x.png: images must be bundled under docs/help (relative path)
+index.md:12: link //evil.example/x: protocol-relative URLs are not allowed
+index.md:13: link \\host\x: protocol-relative URLs are not allowed
+index.md:14: empty link target
+index.md:15: link %zz.md: bad escape
+index.md:16: image #x: not a file
+index.md:17: image nope.png: nope.png not found
+index.md:18: link ftp://x: scheme ftp: is not allowed (http, https, mailto or a relative path)
+index.md:18: link ftp://x: scheme ftp: is not allowed (http, https, mailto or a relative path)
+index.md:19: link ftp://auto.example/x: scheme ftp: is not allowed (http, https, mailto or a relative path)
+index.md:20: link vbscript:x: scheme vbscript: is not allowed (http, https, mailto or a relative path)
+index.md:21: link missing-ref.md: missing-ref.md not found (link to pages by their .md file)
+index.md:22: link guides: guides not found (link to pages by their .md file)
+index.md:24: image index.md: index.md not found
+lint:
+index.md:5: link missing.md: missing.md not found (link to pages by their .md file)
+index.md:6: link ../outside.md: points outside docs/help
+index.md:7: link javascript:alert(1: scheme javascript: is not allowed (http, https, mailto or a relative path)
+index.md:8: link JAVA: JAVA not found (link to pages by their .md file)
+index.md:9: link data:text/html,x: scheme data: is not allowed (http, https, mailto or a relative path)
+index.md:10: image /img/a.png: images must be referenced by a relative path
+index.md:11: image https://example.org/x.png: images must be bundled under docs/help (relative path)
+index.md:12: link //evil.example/x: protocol-relative URLs are not allowed
+index.md:13: link \\host\x: protocol-relative URLs are not allowed
+index.md:14: empty link target
+index.md:15: link %zz.md: bad escape
+index.md:16: image #x: not a file
+index.md:17: image nope.png: nope.png not found
+index.md:18: link ftp://x: scheme ftp: is not allowed (http, https, mailto or a relative path)
+index.md:18: link ftp://x: scheme ftp: is not allowed (http, https, mailto or a relative path)
+index.md:19: link ftp://auto.example/x: scheme ftp: is not allowed (http, https, mailto or a relative path)
+index.md:20: link vbscript:x: scheme vbscript: is not allowed (http, https, mailto or a relative path)
+index.md:21: link missing-ref.md: missing-ref.md not found (link to pages by their .md file)
+index.md:22: link guides: guides not found (link to pages by their .md file)
+index.md:24: image index.md: index.md not found

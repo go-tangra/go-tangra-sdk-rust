@@ -1,0 +1,8 @@
+load:
+assets.md: slug "assets" is reserved: the gateway serves images under assets/
+assets/index.md: slug "assets" is reserved: the gateway serves images under assets/
+assets/x.md: slug "assets/x" is reserved: the gateway serves images under assets/
+lint:
+assets.md: slug "assets" is reserved: the gateway serves images under assets/
+assets/index.md: slug "assets" is reserved: the gateway serves images under assets/
+assets/x.md: slug "assets/x" is reserved: the gateway serves images under assets/

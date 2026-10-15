@@ -1,0 +1,4 @@
+load:
+index.md: not valid UTF-8
+lint:
+index.md: not valid UTF-8

@@ -1,0 +1,4 @@
+load:
+module name "Bad_Module" is not a valid service name
+lint:
+ok
