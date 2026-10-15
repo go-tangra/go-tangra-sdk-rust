@@ -230,6 +230,9 @@ impl Call {
         self.rt
             .metrics
             .record_call(&svc, outcome, dur.as_secs_f64(), reason, &self.operation);
+        // float64(dur)/1e6, as Go.
+        #[allow(clippy::cast_precision_loss)]
+        let dur_ms = dur.as_nanos() as f64 / 1e6;
         self.rt.logger.info(
             "request",
             vec![
@@ -238,7 +241,7 @@ impl Call {
                 attr("callee", self.rt.cfg.service_name.as_str()),
                 attr("operation", self.operation.as_str()),
                 attr("outcome", outcome),
-                attr("duration_ms", dur.as_secs_f64() * 1000.0),
+                attr("duration_ms", dur_ms),
                 attr("correlation_id", self.ctx.correlation_id.as_str()),
                 attr("trace_id", self.ctx.trace_id()),
             ],
