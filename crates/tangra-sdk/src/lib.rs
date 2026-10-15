@@ -14,6 +14,7 @@ pub mod error;
 pub mod identity;
 pub mod listquery;
 pub mod log;
+pub mod policy;
 pub mod testutil;
 pub mod tls;
 
