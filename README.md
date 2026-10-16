@@ -185,3 +185,7 @@ gatewayclient) follow Go unless listed here.
   a binary calling `catalogue::print_permissions`. Host-input patterns are
   compiled with the `regex` crate (RE2 syntax; Unicode classes differ from
   Go's ASCII `\d`/`\w` only on non-ASCII input).
+
+## License
+
+MIT, see [LICENSE](LICENSE).

@@ -6,7 +6,7 @@ members = ["crates/tangra-proto", "crates/tangra-sdk", "examples/notes"]
 version = "0.1.0"
 edition = "2024"
 rust-version = "1.85"
-license-file = "LICENSE"
+license = "MIT"
 repository = "https://github.com/go-tangra/go-tangra-sdk-rust"
 publish = false
 
