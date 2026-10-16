@@ -15,6 +15,8 @@ pub mod auth;
 pub mod catalogue;
 pub mod config;
 pub mod correlation;
+#[cfg(feature = "db")]
+pub mod db;
 pub mod error;
 #[cfg(feature = "events")]
 pub mod events;
