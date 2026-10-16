@@ -21,8 +21,9 @@ Crates:
     (schema + semantic rules), routes derived from OpenAPI `x-freya-*`
     extensions, and a version pin;
   module features: help docs (`helpdocs`), the UI remote (`ui`, feature `ui`), the Valkey
-  event bus (`events`, feature `events`) and the catalogue descriptor
-  (`catalogue`).
+  event bus (`events`, feature `events`), PostgreSQL (`db`, feature `db`:
+  the `db:` config section, the pool, embedded sqlx migrations, the
+  tenant-scoped transaction) and the catalogue descriptor (`catalogue`).
 - `tangra-notes` (`examples/notes`) - an example module using all of the
   above, structured like the Go reference module (go-tangra-deployer): API,
   manifest from OpenAPI, auth and gateway registration, help pages, a Vue
@@ -30,8 +31,13 @@ Crates:
   [Writing a go-tangra module in Rust](docs/writing-a-module.md).
 
 `tangra_sdk::testutil` holds test helpers for module authors: an in-test
-SPIFFE CA, an in-memory identity, and `testutil::platform`, fake `gateway`
-and `auth` services served over mTLS.
+SPIFFE CA, an in-memory identity, `testutil::platform`, fake `gateway`
+and `auth` services served over mTLS, and (feature `testutil-pg`)
+`testutil::pg`, a throwaway PostgreSQL started from local binaries:
+`TANGRA_TEST_PG_DSN` (an existing server), `PG_DIR`, a cached copy, or the
+zonky embedded-postgres jar downloaded on demand into
+`~/.cache/tangra-sdk/pg-<version>` (`TANGRA_TEST_PG_OFFLINE=1` stops the
+download). Without any of them the database tests skip with a notice.
 
 Status: phases 1-5 are done (foundation, identity, transport, runtime,
 gateway/auth integration, help docs, UI, events, catalogue, the example
@@ -156,6 +162,27 @@ gatewayclient) follow Go unless listed here.
 - **OpenAPI routes**: an operation that is both `x-freya-public` and carries
   `x-freya-permission` is refused (warden's rule); the deployer's builder
   lets `public` win.
+### Database (`db`)
+
+The `db:` section and its use follow the deployer (`internal/config` `DB`,
+`internal/store`, `cmd/deployersvc bootstrap`); the driver is sqlx with
+rustls instead of pgx.
+
+- **Migrations** are sqlx's (`sqlx::migrate!`, table `_sqlx_migrations`,
+  sqlx's own advisory lock) instead of goose (`goose_db_version`, lock
+  `8241108`). A Rust module starts its own schema; it does not continue a
+  Go module's goose history.
+- **Production** refuses `db.migrate_dsn` without `sslmode=verify-full` (or
+  `verify-ca`) as well as `db.dsn`; the deployer checks only `db.dsn`.
+  `DbConfig::warnings` names a non-verifying DSN outside production (the
+  deployer accepts it silently).
+- **`connect`** makes the first connection directly (fails at once, like
+  pgxpool's ping); the pool then connects on demand with a 30s acquire
+  timeout. sqlx's per-statement logging is off (pgx logs none).
+- **TLS**: `sslmode`/`sslrootcert` are read from the DSN as libpq does;
+  without `sslrootcert`, the system roots verify the server (pgx: the system
+  pool). `verify-ca` skips the host name check, as in pgx.
+
 ### Help docs, UI, events, catalogue
 
 - **Embedding** uses `include_dir` (`fstree::FileTree::from_embedded`): it
