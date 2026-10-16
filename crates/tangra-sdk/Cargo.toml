@@ -77,3 +77,7 @@ sqlx = { workspace = true, optional = true }
 [dev-dependencies]
 tempfile.workspace = true
 tonic-prost.workspace = true
+
+[[test]]
+name = "db_pg"
+required-features = ["testutil-pg"]
