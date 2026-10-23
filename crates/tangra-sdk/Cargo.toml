@@ -16,6 +16,11 @@ spiffe = ["dep:spiffe"]
 ui = []
 # Valkey stream publisher/consumer for platform:events:<tenant> (redis crate).
 events = ["dep:redis"]
+# PostgreSQL: the `db:` config section, pool, embedded migrations and the
+# tenant-scoped transaction (sqlx, rustls).
+db = ["dep:sqlx"]
+# testutil::pg: a throwaway PostgreSQL from local binaries for module tests.
+testutil-pg = ["db"]
 
 [dependencies]
 tangra-proto.workspace = true
@@ -67,7 +72,12 @@ yaml-rust2.workspace = true
 sha2.workspace = true
 hex.workspace = true
 redis = { workspace = true, optional = true }
+sqlx = { workspace = true, optional = true }
 
 [dev-dependencies]
 tempfile.workspace = true
 tonic-prost.workspace = true
+
+[[test]]
+name = "db_pg"
+required-features = ["testutil-pg"]

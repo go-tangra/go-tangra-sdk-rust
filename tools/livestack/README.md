@@ -62,6 +62,22 @@ check alone waits about 3 minutes; set `LS_RENEWAL=0` to skip it.
 You also need `go`, `cargo`, `node`/`npm`, `openssl`, `curl`, `python3` and
 `unzip`/`xz` (the latter two only for the PostgreSQL download).
 
+### Another module
+
+A module repository can reuse this stack for its own module. Its runner
+sets the hooks below and sources this script. Sourcing defines the functions
+(`build`, `certs`, `configs`, `infra`, `core`, `users`, `start`/`stop`, `req`,
+`sql`, `expect`, `down`, `clean` and so on) but runs nothing. The runner then
+calls them in its own `up` and adds its module's build, configuration and
+checks. The bookmark module's `tools/livestack/livestack.sh` is an example.
+
+| Hook | Effect |
+|---|---|
+| `LS_NOTES=0` | skips building `tangra-notes` and its UI |
+| `LS_EXTRA_SERVICES` | space-separated service names. Each gets a file SVID from `lcmsvc bootstrap` (`$LS_WORK/certs/<name>.pem`) and a Valkey ACL user `<name>` (password `dev`). `down` stops the pid file `run/<name>.pid` |
+| `LS_EXTRA_ALLOW` | space-separated `spiffe-id=prefixes;names` entries, added to `gatewaysvc bootstrap -allow` |
+| `LS_EXTRA_DBS` | space-separated databases. Each is created with a `<db>_app` `LOGIN NOBYPASSRLS` role (password `dev`) that has `CONNECT`, like a module bundle's `init-db.sh` |
+
 ## What the setup does
 
 The setup follows the platform's own stack (go-tangra

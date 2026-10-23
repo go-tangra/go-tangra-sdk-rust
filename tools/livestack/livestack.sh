@@ -35,6 +35,14 @@ GT=$(cd "$SDK/.." && pwd)
 : "${LS_RENEWAL:=1}"              # 1: also prove lcm gRPC renewal (~3 min)
 : "${LS_UI:=1}"                   # 1: npm ci + npm run build the notes UI
 : "${CARGO:=$(command -v cargo || echo "$HOME/.cargo/bin/cargo")}"
+# Hooks for another module's runner that sources this script (see README,
+# "Another module"): LS_NOTES=0 skips building notes; LS_EXTRA_SERVICES
+# (space-separated names) get a file SVID from lcm bootstrap and a Valkey
+# ACL user, and are stopped by down; LS_EXTRA_ALLOW (space-separated
+# `spiffe-id=prefixes;names`) adds gateway route allow-list entries;
+# LS_EXTRA_DBS (space-separated) creates each database with a <db>_app
+# LOGIN NOBYPASSRLS role (password dev), as a module bundle's init-db.sh.
+: "${LS_NOTES:=1}" "${LS_EXTRA_SERVICES:=}" "${LS_EXTRA_ALLOW:=}" "${LS_EXTRA_DBS:=}"
 # Optional prebuilt binaries: PG_DIR (bin/, lib/, share/ of PostgreSQL >= 14
 # with citext and pg_trgm), VALKEY_SERVER (TLS-capable), OPENFGA_BIN.
 
@@ -152,6 +160,11 @@ build() {
   local ext=$C/pg/share/postgresql/extension
   cp "$HERE/timescaledb-shim/timescaledb.control" "$HERE/timescaledb-shim/timescaledb--0.0.1.sql" "$ext/"
 
+  [ "$LS_NOTES" = 1 ] && build_notes
+  echo "sdk go-tangra-sdk-rust HEAD $(git -C "$SDK" rev-parse --short HEAD)$(git -C "$SDK" diff --quiet HEAD -- crates examples || echo '+dirty')" >>"$W/VERSIONS"
+}
+
+build_notes() {
   log "building tangra-notes (features ui)"
   if [ "$LS_UI" = 1 ]; then
     [ -n "${NODE_AUTH_TOKEN:-}" ] || die "LS_UI=1 needs NODE_AUTH_TOKEN (read:packages) for @go-tangra/ui"
@@ -161,7 +174,6 @@ build() {
   [ -f "$SDK/examples/notes/ui/dist/mf-manifest.json" ] || die "examples/notes/ui/dist is missing (run with LS_UI=1)"
   (cd "$SDK" && "$CARGO" build -q -p tangra-notes --features ui)
   ln -sf "$SDK/target/debug/tangra-notes" "$BIN/tangra-notes"
-  echo "sdk go-tangra-sdk-rust HEAD $(git -C "$SDK" rev-parse --short HEAD)$(git -C "$SDK" diff --quiet HEAD -- crates examples || echo '+dirty')" >>"$W/VERSIONS"
 }
 
 certs() {
@@ -295,9 +307,14 @@ infra() {
       sql "$db" "CREATE EXTENSION IF NOT EXISTS timescaledb; CREATE EXTENSION IF NOT EXISTS citext;
         CREATE ROLE ${db}_app LOGIN PASSWORD 'dev' NOBYPASSRLS; GRANT CONNECT ON DATABASE $db TO ${db}_app" >/dev/null
     done
+    for db in $LS_EXTRA_DBS; do
+      sql postgres "CREATE DATABASE $db" >/dev/null
+      sql "$db" "CREATE ROLE ${db}_app LOGIN PASSWORD 'dev' NOBYPASSRLS; GRANT CONNECT ON DATABASE $db TO ${db}_app" >/dev/null
+      log "database $db (role ${db}_app NOBYPASSRLS)"
+    done
   fi
   local users=()
-  for u in gateway auth lcm notes; do users+=(--user "$u" on '>dev' '~*' '&*' '+@all'); done
+  for u in gateway auth lcm notes $LS_EXTRA_SERVICES; do users+=(--user "$u" on '>dev' '~*' '&*' '+@all'); done
   start valkey "$W/logs/valkey.log" "$BIN/valkey-server" --port 0 --bind 127.0.0.1 --tls-port "$P_VALKEY" \
     --tls-cert-file "$W/valkey-tls/tls.crt" --tls-key-file "$W/valkey-tls/tls.key" --tls-ca-cert-file "$W/valkey-tls/ca.crt" \
     --tls-auth-clients no --dir "$W" --save '' --appendonly no --requirepass dev "${users[@]}"
@@ -313,7 +330,7 @@ core() {
   cd "$W"
   # lcm bootstrap: the DB-sealed mesh root + file SVIDs (gateway, auth, and
   # notes for the file-identity run), all under the one root lcm serves.
-  "$BIN/lcmsvc" bootstrap -config "$W/cfg/lcm.yaml" -out "$W/certs" -services gateway,auth,notes -ttl 12h >"$W/logs/lcm-bootstrap.log" 2>&1
+  "$BIN/lcmsvc" bootstrap -config "$W/cfg/lcm.yaml" -out "$W/certs" -services "gateway,auth,notes${LS_EXTRA_SERVICES:+,${LS_EXTRA_SERVICES// /,}}" -ttl 12h >"$W/logs/lcm-bootstrap.log" 2>&1
   start lcm "$W/logs/lcm.log" "$BIN/lcmsvc" -config "$W/cfg/lcm.yaml"
   wait_http "http://127.0.0.1:$P_LCM_ADMIN/readyz" lcm
   # auth bootstrap: platform tenant, roles, signing key, operator invitation.
@@ -321,10 +338,13 @@ core() {
   start auth "$W/logs/auth.log" "$BIN/authsvc" -config "$W/cfg/auth.yaml"
   wait_http "http://127.0.0.1:$P_AUTH_ADMIN/readyz" auth
   # gateway bootstrap: the route allow-list (what a catalogue install grants).
+  local extra=() x
+  for x in $LS_EXTRA_ALLOW; do extra+=(-allow "$x"); done
   "$BIN/gatewaysvc" bootstrap -config "$W/cfg/gateway.yaml" \
     -allow "spiffe://$TD/svc/auth=/api/v1,/authorize,/.well-known,/console;auth" \
     -allow "spiffe://$TD/svc/lcm=/api/lcm;lcm" \
-    -allow "spiffe://$TD/svc/notes=/api/notes;notes" >"$W/logs/gateway-bootstrap.log" 2>&1
+    -allow "spiffe://$TD/svc/notes=/api/notes;notes" \
+    "${extra[@]}" >"$W/logs/gateway-bootstrap.log" 2>&1
   start gateway "$W/logs/gateway.log" "$BIN/gatewaysvc" -config "$W/cfg/gateway.yaml"
   wait_http "http://127.0.0.1:$P_GW_ADMIN/readyz" gateway
   wait_log "$W/logs/auth.log" '"msg":"gateway lease","registered":true' "auth registration" 60
@@ -536,7 +556,7 @@ EOF
 }
 
 down() {
-  for s in notes gateway auth lcm openfga valkey; do stop "$s"; done
+  for s in $LS_EXTRA_SERVICES notes gateway auth lcm openfga valkey; do stop "$s"; done
   if [ -f "$W/pgdata/postmaster.pid" ]; then "$C/pg/bin/pg_ctl" -D "$W/pgdata" -m fast stop >/dev/null && log "stopped postgres"; fi
   log "down (work dir kept: $W; remove it to start from scratch)"
 }
@@ -545,6 +565,9 @@ clean() {
   down
   case "$W" in */*livestack*) rm -rf "$W" && log "removed $W" ;; *) die "refusing to remove $W (no 'livestack' in the path)" ;; esac
 }
+
+# Sourced by another module's runner: define everything, run nothing.
+[ "${BASH_SOURCE[0]}" = "$0" ] || return 0
 
 case "${1:-}" in
   up) up ;;

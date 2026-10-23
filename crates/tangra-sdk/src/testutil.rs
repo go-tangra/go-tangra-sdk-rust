@@ -17,6 +17,8 @@ use crate::identity::{
     Bundle, Credential, IdentityError, Provider, SpiffeId, Subscribers, Svid, Update, load_certified_key,
 };
 
+#[cfg(feature = "testutil-pg")]
+pub mod pg;
 pub mod platform;
 
 /// A test failure (string error, so tests can `?` it).
@@ -186,6 +188,43 @@ impl TestCa {
         params.extended_key_usages = ekus;
         params.not_before = to_offset(o.not_before.unwrap_or(now - Duration::from_secs(60)));
         params.not_after = to_offset(o.not_after.unwrap_or(now + Duration::from_secs(3600)));
+        params.serial_number = Some(SerialNumber::from(
+            self.serial.fetch_add(1, std::sync::atomic::Ordering::Relaxed),
+        ));
+        let cert = params.signed_by(&key, &self.issuer).map_err(terr)?;
+        Ok(Issued {
+            cert_pem: cert.pem(),
+            key_pem: key.serialize_pem(),
+            cert_der: cert.der().clone(),
+        })
+    }
+
+    /// Issues a plain TLS server certificate (no SPIFFE ID) for DNS names
+    /// and IP addresses, valid for an hour (test databases and other
+    /// non-mesh servers).
+    pub fn issue_tls_server(&self, dns: &[&str], ips: &[&str]) -> Result<Issued, TestError> {
+        let now = SystemTime::now();
+        let key = KeyPair::generate_for(&rcgen::PKCS_ECDSA_P256_SHA256).map_err(terr)?;
+        let mut params = CertificateParams::default();
+        let mut dn = DistinguishedName::new();
+        dn.push(DnType::CommonName, dns.first().copied().unwrap_or("localhost"));
+        params.distinguished_name = dn;
+        let mut sans = Vec::new();
+        for d in dns {
+            sans.push(SanType::DnsName((*d).try_into().map_err(terr)?));
+        }
+        for ip in ips {
+            sans.push(SanType::IpAddress(ip.parse().map_err(terr)?));
+        }
+        params.subject_alt_names = sans;
+        params.is_ca = IsCa::ExplicitNoCa;
+        params.key_usages = vec![
+            KeyUsagePurpose::DigitalSignature,
+            KeyUsagePurpose::KeyEncipherment,
+        ];
+        params.extended_key_usages = vec![ExtendedKeyUsagePurpose::ServerAuth];
+        params.not_before = to_offset(now - Duration::from_secs(60));
+        params.not_after = to_offset(now + Duration::from_secs(3600));
         params.serial_number = Some(SerialNumber::from(
             self.serial.fetch_add(1, std::sync::atomic::Ordering::Relaxed),
         ));

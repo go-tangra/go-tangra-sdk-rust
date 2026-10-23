@@ -16,9 +16,10 @@ One binary crate with a library, so integration tests can build the module
 in-process:
 
 ```
-Cargo.toml          tangra-sdk (feature events if you publish events), axum, tokio, include_dir
+Cargo.toml          tangra-sdk (features events, db as needed), axum, tokio, include_dir, sqlx
 build.rs            embeds ui/dist when built; stamps NOTES_VERSION
 src/lib.rs          config, manifest, module, api, store, docs, remote
+migrations/         SQL migrations (feature db)
 src/main.rs         -config / bootstrap / --healthcheck / version
 src/bin/<module>-catalogue-permissions.rs
 api/openapi/<module>.yaml
@@ -124,9 +125,38 @@ The SDK has no OpenAPI request validator (the deployer uses kin-openapi);
 validate parameters and bodies in the handlers with the same outcomes
 (`400 malformed_body`, `422 validation_failed`, `413 body_too_large`).
 
-Storage: notes keeps notes in memory. A real module uses PostgreSQL (sqlx)
-with migrations applied by `bootstrap` and at start, `sslmode=verify-full`
-in production, the tenant in every query.
+Storage: notes keeps notes in memory; a real module uses PostgreSQL (step 6a).
+
+## 6a. Storage — PostgreSQL (feature `db`)
+
+Enable `tangra-sdk` feature `db` and depend on `sqlx` (the version
+`tangra_sdk::db::sqlx` re-exports; features `postgres`, `runtime-tokio`,
+`macros`, `migrate`). Then, as the deployer does:
+
+- **Config**: a `db: tangra_sdk::db::DbConfig` section (`dsn`,
+  `migrate_dsn`, `max_conns`, default 16). Call `db.validate(prod)` from
+  your config's `validate` (required DSN; production needs
+  `sslmode=verify-full` or `verify-ca`, the CA as `sslrootcert=` in the
+  DSN) and log `db.warnings()`.
+- **Two roles**: `dsn` is the application role (`LOGIN NOBYPASSRLS`, created
+  by the bundle's `init-db.sh`), `migrate_dsn` the database owner.
+- **Migrations**: SQL files under `migrations/`, embedded with
+  `static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");`.
+  Grant the tables to the application role and enable row-level security
+  with a `tenant_id = current_setting('app.tenant_id', true)::uuid` policy
+  (deployer `0003_rls.sql`).
+- **`bootstrap`**: `<module> bootstrap -config <path>` loads the config and
+  runs `tangra_sdk::db::migrate(&cfg.db, &MIGRATOR)`, then exits; the normal
+  start runs the same migration before `tangra_sdk::db::connect(&cfg.db)`.
+- **Queries**: open every unit of work with
+  `tangra_sdk::db::begin(&pool, &Scope::tenant(&user.tenant_id))` (sets
+  `app.tenant_id` for the transaction) and still put `tenant_id = $1` in
+  every `WHERE`; build `ORDER BY` from `listquery::Request::order_by` only.
+  Map `db::is_unique_violation` to `409 conflict`.
+- **Tests**: feature `testutil-pg` gives `testutil::pg::Postgres::start()`,
+  a throwaway server (`None`, with a notice, when no binaries are found):
+  `pg.database("x")` returns the owner DSN of a fresh database, `pg.exec`
+  creates the application role, `Postgres::dsn_as` builds its DSN.
 
 ## 7. Help pages — `docs/help`, `src/docs.rs`
 
